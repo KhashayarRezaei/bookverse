@@ -236,9 +236,12 @@ class AiRecommendationTest extends TestCase
         $job = new GenerateAiRecommendations($this->book);
         $job->handle();
 
-        // Should not store anything in cache on error
+        // Should store mock recommendations in cache when API fails
         $cachedRecommendations = Cache::get("book_recommendations_{$this->book->id}");
-        $this->assertNull($cachedRecommendations);
+        $this->assertNotNull($cachedRecommendations);
+        $this->assertIsArray($cachedRecommendations);
+        $this->assertCount(2, $cachedRecommendations);
+        $this->assertEquals('Mock Recommendation 1', $cachedRecommendations[0]['title']);
     }
 
     public function test_ai_recommendation_service_uses_correct_api_endpoint()

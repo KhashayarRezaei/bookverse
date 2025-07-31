@@ -19,6 +19,7 @@
     </source>
     <php>
         <env name="APP_ENV" value="testing"/>
+        <env name="APP_KEY" value="base64:6PvatMPAWn9ZW1igG/RDCf7y3f6tZPuyThvVLKrn3QM="/>
         <env name="APP_MAINTENANCE_DRIVER" value="file"/>
         <env name="BCRYPT_ROUNDS" value="4"/>
         <env name="CACHE_STORE" value="array"/>
@@ -30,5 +31,7 @@
         <env name="PULSE_ENABLED" value="false"/>
         <env name="TELESCOPE_ENABLED" value="false"/>
         <env name="NIGHTWATCH_ENABLED" value="false"/>
+        <env name="HUGGINGFACE_API_KEY" value="test_api_key_123"/>
+        <env name="JWT_SECRET" value="test_jwt_secret_for_testing_environment_only"/>
     </php>
 </phpunit>
