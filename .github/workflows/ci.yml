@@ -92,11 +92,21 @@ jobs:
         HUGGINGFACE_API_KEY=test_api_key_123
         EOF
 
+    - name: Debug .env file
+      run: |
+        echo "=== .env file contents ==="
+        cat .env
+        echo "=== Database configuration ==="
+        grep -E "DB_" .env
+
     - name: Generate app key
       run: php artisan key:generate
 
     - name: Generate JWT secret
       run: php artisan jwt:secret
+
+    - name: Clear config cache
+      run: php artisan config:clear
 
     - name: Set directory permissions
       run: chmod -R 777 storage bootstrap/cache
@@ -104,6 +114,13 @@ jobs:
     - name: Create database
       run: |
         mysql -h 127.0.0.1 -P 3306 -u bookverse_user -ppassword -e "CREATE DATABASE IF NOT EXISTS bookverse_test;"
+
+    - name: Debug database connection
+      run: |
+        echo "=== Testing database connection ==="
+        mysql -h 127.0.0.1 -P 3306 -u bookverse_user -ppassword -e "SHOW DATABASES;"
+        echo "=== Laravel database config ==="
+        php artisan tinker --execute="echo 'DB_DATABASE: ' . config('database.connections.mysql.database') . PHP_EOL;"
 
     - name: Run migrations
       run: php artisan migrate --force
