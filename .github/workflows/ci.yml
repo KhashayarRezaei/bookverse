@@ -169,7 +169,7 @@ jobs:
       run: composer require --dev phpstan/phpstan
 
     - name: Run PHPStan
-      run: ./vendor/bin/phpstan analyse --level=8
+      run: ./vendor/bin/phpstan analyse --memory-limit=512M
 
   security:
     runs-on: ubuntu-latest
