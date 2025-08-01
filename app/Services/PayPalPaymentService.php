@@ -19,7 +19,7 @@ class PayPalPaymentService implements PaymentGatewayInterface
         // Simulate PayPal payment processing
         // In a real implementation, this would integrate with PayPal API
 
-        $transactionId = 'paypal_' . uniqid() . '_' . time();
+        $transactionId = 'paypal_'.uniqid().'_'.time();
 
         return [
             'status' => 'success',

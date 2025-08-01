@@ -206,7 +206,7 @@ class OrderController extends Controller
             }
 
             // Process payment using the factory pattern
-            $paymentFactory = new PaymentFactory();
+            $paymentFactory = new PaymentFactory;
             $paymentService = $paymentFactory->create($request->payment_method);
             $paymentResult = $paymentService->charge($request->user(), $totalAmount);
 

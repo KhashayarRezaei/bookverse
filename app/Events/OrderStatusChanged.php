@@ -39,7 +39,7 @@ class OrderStatusChanged implements ShouldBroadcast
     public function broadcastOn(): array
     {
         return [
-            new PrivateChannel('user.' . $this->order->user_id),
+            new PrivateChannel('user.'.$this->order->user_id),
         ];
     }
 
