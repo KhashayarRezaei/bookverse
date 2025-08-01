@@ -132,7 +132,7 @@ jobs:
       run: composer require --dev squizlabs/php_codesniffer
 
     - name: Run PHP_CodeSniffer with PSR12
-      run: ./vendor/bin/phpcs --standard=PSR12 app/
+      run: ./vendor/bin/phpcs --standard=PSR12 -n app/
 
   lint:
     runs-on: ubuntu-latest
@@ -170,6 +170,12 @@ jobs:
 
     - name: Run PHPStan
       run: ./vendor/bin/phpstan analyse --memory-limit=512M
+
+    - name: Install PHP_CodeSniffer
+      run: composer require --dev squizlabs/php_codesniffer
+
+    - name: Run PHP_CodeSniffer with PSR12
+      run: ./vendor/bin/phpcs --standard=PSR12 -n app/
 
   security:
     runs-on: ubuntu-latest

@@ -11,7 +11,9 @@ use Illuminate\Queue\SerializesModels;
 
 class OrderStatusChanged implements ShouldBroadcast
 {
-    use Dispatchable, InteractsWithSockets, SerializesModels;
+    use Dispatchable;
+    use InteractsWithSockets;
+    use SerializesModels;
 
     public $order;
 
@@ -37,7 +39,7 @@ class OrderStatusChanged implements ShouldBroadcast
     public function broadcastOn(): array
     {
         return [
-            new PrivateChannel('user.'.$this->order->user_id),
+            new PrivateChannel('user.' . $this->order->user_id),
         ];
     }
 

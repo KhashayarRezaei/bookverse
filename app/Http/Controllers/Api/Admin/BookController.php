@@ -126,7 +126,7 @@ class BookController extends Controller
             'description' => 'required|string',
             'price' => 'required|numeric|min:0',
             'isbn' => 'required|string|max:20|unique:books',
-            'published_year' => 'required|integer|min:1800|max:'.(date('Y') + 1),
+            'published_year' => 'required|integer|min:1800|max:' . (date('Y') + 1),
         ]);
 
         $book = Book::create($validated);
@@ -246,8 +246,8 @@ class BookController extends Controller
             'author' => 'sometimes|required|string|max:255',
             'description' => 'sometimes|required|string',
             'price' => 'sometimes|required|numeric|min:0',
-            'isbn' => 'sometimes|required|string|max:20|unique:books,isbn,'.$book->id,
-            'published_year' => 'sometimes|required|integer|min:1800|max:'.(date('Y') + 1),
+            'isbn' => 'sometimes|required|string|max:20|unique:books,isbn,' . $book->id,
+            'published_year' => 'sometimes|required|integer|min:1800|max:' . (date('Y') + 1),
         ]);
 
         $book->update($validated);

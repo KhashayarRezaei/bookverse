@@ -11,7 +11,9 @@ use Illuminate\Queue\SerializesModels;
 
 class OrderPlaced implements ShouldBroadcast
 {
-    use Dispatchable, InteractsWithSockets, SerializesModels;
+    use Dispatchable;
+    use InteractsWithSockets;
+    use SerializesModels;
 
     public $order;
 
@@ -31,7 +33,7 @@ class OrderPlaced implements ShouldBroadcast
     public function broadcastOn(): array
     {
         return [
-            new PrivateChannel('user.'.$this->order->user_id),
+            new PrivateChannel('user.' . $this->order->user_id),
         ];
     }
 
@@ -42,7 +44,7 @@ class OrderPlaced implements ShouldBroadcast
     {
         return [
             'type' => 'order_placed',
-            'message' => 'Your order #'.$this->order->id.' has been placed successfully!',
+            'message' => 'Your order #' . $this->order->id . ' has been placed successfully!',
             'order_id' => $this->order->id,
             'total_amount' => $this->order->total_amount,
             'status' => $this->order->status,

@@ -34,7 +34,7 @@ class AiAnalyticsService
                 'generated_at' => now()->toISOString(),
             ];
         } catch (\Exception $e) {
-            Log::error('AI Analytics error: '.$e->getMessage());
+            Log::error('AI Analytics error: ' . $e->getMessage());
 
             return [
                 'trends' => $this->generateBasicTrends($salesData, $bookData, $userData),
@@ -94,7 +94,7 @@ Format as JSON with 'trends' and 'recommendations' fields.";
      */
     private function generateInsightsFromAI(string $prompt): array
     {
-        $cacheKey = 'ai_insights:'.md5($prompt);
+        $cacheKey = 'ai_insights:' . md5($prompt);
 
         // Check cache first
         if (Cache::has($cacheKey)) {
@@ -103,7 +103,7 @@ Format as JSON with 'trends' and 'recommendations' fields.";
 
         try {
             $response = Http::withHeaders([
-                'Authorization' => 'Bearer '.$this->apiKey,
+                'Authorization' => 'Bearer ' . $this->apiKey,
                 'Content-Type' => 'application/json',
             ])->post($this->apiUrl, [
                 'inputs' => $prompt,
@@ -124,9 +124,9 @@ Format as JSON with 'trends' and 'recommendations' fields.";
                 return $insights;
             }
 
-            throw new \Exception('AI API request failed: '.$response->body());
+            throw new \Exception('AI API request failed: ' . $response->body());
         } catch (\Exception $e) {
-            Log::error('AI API error: '.$e->getMessage());
+            Log::error('AI API error: ' . $e->getMessage());
             throw $e;
         }
     }
@@ -210,7 +210,7 @@ Format as JSON with 'trends' and 'recommendations' fields.";
             $trends[] = "Average order value is \${$salesData['average_order_value']}";
         }
 
-        return $trends ? implode('. ', $trends).'.' : 'No significant trends detected in the current data.';
+        return $trends ? implode('. ', $trends) . '.' : 'No significant trends detected in the current data.';
     }
 
     /**

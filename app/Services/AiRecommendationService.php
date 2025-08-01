@@ -37,7 +37,7 @@ class AiRecommendationService
 
             // Make API call to Hugging Face
             $response = Http::withHeaders([
-                'Authorization' => 'Bearer '.$this->apiKey,
+                'Authorization' => 'Bearer ' . $this->apiKey,
                 'Content-Type' => 'application/json',
             ])->post($this->apiUrl, [
                 'inputs' => $text,
@@ -75,10 +75,10 @@ class AiRecommendationService
      */
     protected function prepareBookText(Book $book): string
     {
-        $text = $book->title.' '.$book->author;
+        $text = $book->title . ' ' . $book->author;
 
         if ($book->description) {
-            $text .= ' '.$book->description;
+            $text .= ' ' . $book->description;
         }
 
         return $text;
@@ -134,9 +134,9 @@ class AiRecommendationService
 
             // Add similarity score to the book
             $query->orWhere(function ($q) use ($label) {
-                $q->where('title', 'like', '%'.$label.'%')
-                    ->orWhere('description', 'like', '%'.$label.'%')
-                    ->orWhere('author', 'like', '%'.$label.'%');
+                $q->where('title', 'like', '%' . $label . '%')
+                    ->orWhere('description', 'like', '%' . $label . '%')
+                    ->orWhere('author', 'like', '%' . $label . '%');
             });
         }
 

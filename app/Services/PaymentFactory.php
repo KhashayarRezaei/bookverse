@@ -23,8 +23,8 @@ class PaymentFactory
         $method = strtolower(trim($paymentMethod));
 
         return match ($method) {
-            'stripe' => new StripePaymentService,
-            'paypal' => new PayPalPaymentService,
+            'stripe' => new StripePaymentService(),
+            'paypal' => new PayPalPaymentService(),
             default => throw new InvalidArgumentException("Unsupported payment method: {$paymentMethod}")
         };
     }

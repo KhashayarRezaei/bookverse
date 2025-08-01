@@ -14,7 +14,10 @@ use Illuminate\Support\Facades\Log;
 
 class GenerateBookSummaryJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable;
+    use InteractsWithQueue;
+    use Queueable;
+    use SerializesModels;
 
     public Book $book;
 

@@ -65,9 +65,8 @@ class AiSearchService
 
             // Return limited results
             return array_slice($results, 0, $limit);
-
         } catch (\Exception $e) {
-            Log::error('AI Search error: '.$e->getMessage());
+            Log::error('AI Search error: ' . $e->getMessage());
 
             return $this->fallbackSearch($query, $limit);
         }
@@ -78,7 +77,7 @@ class AiSearchService
      */
     protected function getEmbedding(string $text): ?array
     {
-        $cacheKey = 'embedding:'.md5($text);
+        $cacheKey = 'embedding:' . md5($text);
 
         // Check cache first
         if (Cache::has($cacheKey)) {
@@ -87,7 +86,7 @@ class AiSearchService
 
         try {
             $response = Http::withHeaders([
-                'Authorization' => 'Bearer '.$this->apiKey,
+                'Authorization' => 'Bearer ' . $this->apiKey,
                 'Content-Type' => 'application/json',
             ])->post($this->apiUrl, [
                 'inputs' => $text,
@@ -102,12 +101,11 @@ class AiSearchService
                 return $embedding;
             }
 
-            Log::warning('Hugging Face API error: '.$response->body());
+            Log::warning('Hugging Face API error: ' . $response->body());
 
             return null;
-
         } catch (\Exception $e) {
-            Log::error('Embedding API error: '.$e->getMessage());
+            Log::error('Embedding API error: ' . $e->getMessage());
 
             return null;
         }
@@ -118,7 +116,7 @@ class AiSearchService
      */
     protected function getBookEmbedding(Book $book, string $bookText): ?array
     {
-        $cacheKey = 'book_embedding:'.$book->id;
+        $cacheKey = 'book_embedding:' . $book->id;
 
         // Check cache first
         if (Cache::has($cacheKey)) {

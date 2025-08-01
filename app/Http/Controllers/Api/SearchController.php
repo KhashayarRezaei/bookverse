@@ -98,7 +98,7 @@ class SearchController extends Controller
         $minScore = $request->get('min_score', 0.3);
 
         // Generate cache key based on search parameters
-        $cacheKey = 'search:'.md5($query.$limit.$minScore);
+        $cacheKey = 'search:' . md5($query . $limit . $minScore);
 
         // Try to get cached results first
         $cachedResults = Cache::get($cacheKey);
@@ -126,7 +126,6 @@ class SearchController extends Controller
             Cache::put($cacheKey, $response, 3600);
 
             return response()->json($response);
-
         } catch (\Exception $e) {
             return response()->json([
                 'error' => 'Search service temporarily unavailable',
