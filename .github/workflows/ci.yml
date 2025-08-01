@@ -159,8 +159,14 @@ jobs:
     - name: Install dependencies
       run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
 
+    - name: Install Laravel Pint
+      run: composer require --dev laravel/pint
+
     - name: Run Laravel Pint
       run: ./vendor/bin/pint --test
+
+    - name: Install PHPStan
+      run: composer require --dev phpstan/phpstan
 
     - name: Run PHPStan
       run: ./vendor/bin/phpstan analyse --level=8
