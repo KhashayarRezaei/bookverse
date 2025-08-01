@@ -160,4 +160,4 @@ class UserRegistrationTest extends TestCase
                 'expires_in',
             ]);
     }
-} 
+}

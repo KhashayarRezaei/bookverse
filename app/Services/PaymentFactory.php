@@ -10,8 +10,8 @@ class PaymentFactory
     /**
      * Create a payment service based on the payment method
      *
-     * @param string|null $paymentMethod The payment method (stripe, paypal)
-     * @return PaymentGatewayInterface
+     * @param  string|null  $paymentMethod  The payment method (stripe, paypal)
+     *
      * @throws InvalidArgumentException
      */
     public function create(?string $paymentMethod): PaymentGatewayInterface
@@ -23,8 +23,8 @@ class PaymentFactory
         $method = strtolower(trim($paymentMethod));
 
         return match ($method) {
-            'stripe' => new StripePaymentService(),
-            'paypal' => new PayPalPaymentService(),
+            'stripe' => new StripePaymentService,
+            'paypal' => new PayPalPaymentService,
             default => throw new InvalidArgumentException("Unsupported payment method: {$paymentMethod}")
         };
     }

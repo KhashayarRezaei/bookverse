@@ -1,13 +1,13 @@
 <?php
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\AnalyticsController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\BookController;
 use App\Http\Controllers\Api\OrderController;
-use App\Http\Controllers\Api\SwaggerController;
 use App\Http\Controllers\Api\SearchController;
-use App\Http\Controllers\Api\AnalyticsController;
+use App\Http\Controllers\Api\SwaggerController;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -28,7 +28,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::prefix('auth')->group(function () {
     Route::post('register', [AuthController::class, 'register']);
     Route::post('login', [AuthController::class, 'login']);
-    
+
     // Protected routes
     Route::middleware('auth:api')->group(function () {
         Route::post('logout', [AuthController::class, 'logout']);
@@ -71,18 +71,18 @@ Route::middleware('auth:api')->group(function () {
 });
 
 // API Documentation
-Route::get('docs', [SwaggerController::class, 'index']); 
+Route::get('docs', [SwaggerController::class, 'index']);
 
 // Admin Routes (Protected by JWT and admin policies)
 Route::middleware('auth:api')->prefix('admin')->group(function () {
     // Admin Books Management
     Route::apiResource('books', \App\Http\Controllers\Api\Admin\BookController::class);
-    
+
     // Admin Orders Management
     Route::apiResource('orders', \App\Http\Controllers\Api\Admin\OrderController::class)->except(['store', 'destroy']);
     Route::get('orders/stats/summary', [\App\Http\Controllers\Api\Admin\OrderController::class, 'stats']);
-    
+
     // Admin Users Management
     Route::apiResource('users', \App\Http\Controllers\Api\Admin\UserController::class);
     Route::get('users/stats/summary', [\App\Http\Controllers\Api\Admin\UserController::class, 'stats']);
-}); 
+});

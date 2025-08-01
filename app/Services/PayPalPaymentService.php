@@ -10,8 +10,8 @@ class PayPalPaymentService implements PaymentGatewayInterface
     /**
      * Charge a user using PayPal payment gateway
      *
-     * @param User $user The user to charge
-     * @param float $amount The amount to charge
+     * @param  User  $user  The user to charge
+     * @param  float  $amount  The amount to charge
      * @return array Response containing status, transaction_id, and amount
      */
     public function charge(User $user, float $amount): array
@@ -19,7 +19,7 @@ class PayPalPaymentService implements PaymentGatewayInterface
         // Simulate PayPal payment processing
         // In a real implementation, this would integrate with PayPal API
 
-        $transactionId = 'paypal_' . uniqid() . '_' . time();
+        $transactionId = 'paypal_'.uniqid().'_'.time();
 
         return [
             'status' => 'success',
@@ -27,7 +27,7 @@ class PayPalPaymentService implements PaymentGatewayInterface
             'amount' => $amount,
             'gateway' => 'paypal',
             'user_id' => $user->id,
-            'timestamp' => now()->toISOString()
+            'timestamp' => now()->toISOString(),
         ];
     }
 }

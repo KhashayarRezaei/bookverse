@@ -7,7 +7,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\OrderRequest;
 use App\Models\Book;
 use App\Models\Order;
-use App\Models\OrderItem;
 use App\Services\PaymentFactory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -27,17 +26,22 @@ class OrderController extends Controller
      *     description="Get a paginated list of orders for the authenticated user",
      *     tags={"Orders"},
      *     security={{"bearerAuth":{}}},
+     *
      *     @OA\Parameter(
      *         name="page",
      *         in="query",
      *         description="Page number for pagination",
      *         required=false,
+     *
      *         @OA\Schema(type="integer", default=1)
      *     ),
+     *
      *     @OA\Response(
      *         response=200,
      *         description="Orders retrieved successfully",
+     *
      *         @OA\JsonContent(
+     *
      *             @OA\Property(property="current_page", type="integer", example=1),
      *             @OA\Property(property="data", type="array", @OA\Items(
      *                 @OA\Property(property="id", type="integer", example=1),
@@ -74,10 +78,13 @@ class OrderController extends Controller
      *             @OA\Property(property="total", type="integer", example=1)
      *         )
      *     ),
+     *
      *     @OA\Response(
      *         response=401,
      *         description="Unauthorized",
+     *
      *         @OA\JsonContent(
+     *
      *             @OA\Property(property="message", type="string", example="Unauthenticated.")
      *         )
      *     )
@@ -97,10 +104,13 @@ class OrderController extends Controller
      *     description="Create a new order with payment processing using the factory pattern",
      *     tags={"Orders"},
      *     security={{"bearerAuth":{}}},
+     *
      *     @OA\RequestBody(
      *         required=true,
+     *
      *         @OA\JsonContent(
      *             required={"items","payment_method"},
+     *
      *             @OA\Property(property="items", type="array", @OA\Items(
      *                 @OA\Property(property="book_id", type="integer", example=1, description="Book ID"),
      *                 @OA\Property(property="quantity", type="integer", example=2, description="Quantity of books")
@@ -108,10 +118,13 @@ class OrderController extends Controller
      *             @OA\Property(property="payment_method", type="string", example="stripe", description="Payment method (stripe or paypal)")
      *         )
      *     ),
+     *
      *     @OA\Response(
      *         response=201,
      *         description="Order created successfully",
+     *
      *         @OA\JsonContent(
+     *
      *             @OA\Property(property="message", type="string", example="Order created successfully."),
      *             @OA\Property(property="order", type="object",
      *                 @OA\Property(property="id", type="integer", example=1),
@@ -146,17 +159,23 @@ class OrderController extends Controller
      *             )
      *         )
      *     ),
+     *
      *     @OA\Response(
      *         response=401,
      *         description="Unauthorized",
+     *
      *         @OA\JsonContent(
+     *
      *             @OA\Property(property="message", type="string", example="Unauthenticated.")
      *         )
      *     ),
+     *
      *     @OA\Response(
      *         response=422,
      *         description="Payment failed or validation error",
+     *
      *         @OA\JsonContent(
+     *
      *             @OA\Property(property="message", type="string", example="Payment failed. Please try again."),
      *             @OA\Property(property="payment_error", type="object",
      *                 @OA\Property(property="status", type="string", example="error"),
@@ -187,7 +206,7 @@ class OrderController extends Controller
             }
 
             // Process payment using the factory pattern
-            $paymentFactory = new PaymentFactory();
+            $paymentFactory = new PaymentFactory;
             $paymentService = $paymentFactory->create($request->payment_method);
             $paymentResult = $paymentService->charge($request->user(), $totalAmount);
 
@@ -234,17 +253,22 @@ class OrderController extends Controller
      *     description="Retrieve details of a specific order by ID for the authenticated user",
      *     tags={"Orders"},
      *     security={{"bearerAuth":{}}},
+     *
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
      *         description="Order ID",
      *         required=true,
+     *
      *         @OA\Schema(type="integer", example=1)
      *     ),
+     *
      *     @OA\Response(
      *         response=200,
      *         description="Order retrieved successfully",
+     *
      *         @OA\JsonContent(
+     *
      *             @OA\Property(property="id", type="integer", example=1),
      *             @OA\Property(property="user_id", type="integer", example=1),
      *             @OA\Property(property="total_amount", type="number", format="float", example=59.97),
@@ -268,17 +292,23 @@ class OrderController extends Controller
      *             ))
      *         )
      *     ),
+     *
      *     @OA\Response(
      *         response=401,
      *         description="Unauthorized",
+     *
      *         @OA\JsonContent(
+     *
      *             @OA\Property(property="message", type="string", example="Unauthenticated.")
      *         )
      *     ),
+     *
      *     @OA\Response(
      *         response=404,
      *         description="Order not found",
+     *
      *         @OA\JsonContent(
+     *
      *             @OA\Property(property="message", type="string", example="Order not found.")
      *         )
      *     )
@@ -288,7 +318,7 @@ class OrderController extends Controller
     {
         $order = $request->user()->orders()->with('items.book')->find($id);
 
-        if (!$order) {
+        if (! $order) {
             return response()->json([
                 'message' => 'Order not found.',
             ], 404);

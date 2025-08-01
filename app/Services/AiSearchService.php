@@ -3,13 +3,14 @@
 namespace App\Services;
 
 use App\Models\Book;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
 class AiSearchService
 {
     protected $apiUrl = 'https://api-inference.huggingface.co/models/sentence-transformers/all-MiniLM-L6-v2';
+
     protected $apiKey;
 
     public function __construct()
@@ -25,33 +26,33 @@ class AiSearchService
         try {
             // Get all books for comparison
             $books = Book::all();
-            
+
             if ($books->isEmpty()) {
                 return [];
             }
 
             // Get query embedding
             $queryEmbedding = $this->getEmbedding($query);
-            
-            if (!$queryEmbedding) {
+
+            if (! $queryEmbedding) {
                 return $this->fallbackSearch($query, $limit);
             }
 
             // Get book embeddings and calculate similarities
             $results = [];
-            
+
             foreach ($books as $book) {
                 $bookText = $this->prepareBookText($book);
                 $bookEmbedding = $this->getBookEmbedding($book, $bookText);
-                
+
                 if ($bookEmbedding) {
                     $similarity = $this->calculateCosineSimilarity($queryEmbedding, $bookEmbedding);
-                    
+
                     if ($similarity >= $minScore) {
                         $results[] = [
                             'book' => $book,
                             'score' => $similarity,
-                            'highlights' => $this->generateHighlights($query, $bookText)
+                            'highlights' => $this->generateHighlights($query, $bookText),
                         ];
                     }
                 }
@@ -66,7 +67,8 @@ class AiSearchService
             return array_slice($results, 0, $limit);
 
         } catch (\Exception $e) {
-            Log::error('AI Search error: ' . $e->getMessage());
+            Log::error('AI Search error: '.$e->getMessage());
+
             return $this->fallbackSearch($query, $limit);
         }
     }
@@ -76,8 +78,8 @@ class AiSearchService
      */
     protected function getEmbedding(string $text): ?array
     {
-        $cacheKey = 'embedding:' . md5($text);
-        
+        $cacheKey = 'embedding:'.md5($text);
+
         // Check cache first
         if (Cache::has($cacheKey)) {
             return Cache::get($cacheKey);
@@ -85,26 +87,28 @@ class AiSearchService
 
         try {
             $response = Http::withHeaders([
-                'Authorization' => 'Bearer ' . $this->apiKey,
+                'Authorization' => 'Bearer '.$this->apiKey,
                 'Content-Type' => 'application/json',
             ])->post($this->apiUrl, [
-                'inputs' => $text
+                'inputs' => $text,
             ]);
 
             if ($response->successful()) {
                 $embedding = $response->json();
-                
+
                 // Cache the embedding for 24 hours
                 Cache::put($cacheKey, $embedding, 86400);
-                
+
                 return $embedding;
             }
 
-            Log::warning('Hugging Face API error: ' . $response->body());
+            Log::warning('Hugging Face API error: '.$response->body());
+
             return null;
 
         } catch (\Exception $e) {
-            Log::error('Embedding API error: ' . $e->getMessage());
+            Log::error('Embedding API error: '.$e->getMessage());
+
             return null;
         }
     }
@@ -114,20 +118,20 @@ class AiSearchService
      */
     protected function getBookEmbedding(Book $book, string $bookText): ?array
     {
-        $cacheKey = 'book_embedding:' . $book->id;
-        
+        $cacheKey = 'book_embedding:'.$book->id;
+
         // Check cache first
         if (Cache::has($cacheKey)) {
             return Cache::get($cacheKey);
         }
 
         $embedding = $this->getEmbedding($bookText);
-        
+
         if ($embedding) {
             // Cache for 24 hours
             Cache::put($cacheKey, $embedding, 86400);
         }
-        
+
         return $embedding;
     }
 
@@ -140,7 +144,7 @@ class AiSearchService
             $book->title,
             $book->author,
             $book->description,
-            $book->published_year
+            $book->published_year,
         ]);
     }
 
@@ -178,10 +182,12 @@ class AiSearchService
         $highlights = [];
         $queryWords = explode(' ', strtolower($query));
         $textWords = explode(' ', $text);
-        
+
         foreach ($queryWords as $queryWord) {
-            if (strlen($queryWord) < 3) continue;
-            
+            if (strlen($queryWord) < 3) {
+                continue;
+            }
+
             foreach ($textWords as $textWord) {
                 if (stripos($textWord, $queryWord) !== false) {
                     $highlights[] = $textWord;
@@ -189,7 +195,7 @@ class AiSearchService
                 }
             }
         }
-        
+
         return array_unique(array_slice($highlights, 0, 3));
     }
 
@@ -208,8 +214,8 @@ class AiSearchService
             return [
                 'book' => $book,
                 'score' => 0.5, // Default score for fallback
-                'highlights' => []
+                'highlights' => [],
             ];
         })->toArray();
     }
-} 
+}

@@ -3,13 +3,14 @@
 namespace App\Services;
 
 use App\Models\Book;
+use Exception;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
-use Exception;
 
 class AiRecommendationService
 {
     protected $apiKey;
+
     protected $apiUrl;
 
     public function __construct()
@@ -20,9 +21,6 @@ class AiRecommendationService
 
     /**
      * Get AI-powered recommendations for a book
-     *
-     * @param Book $book
-     * @return array
      */
     public function getRecommendations(Book $book): array
     {
@@ -34,53 +32,53 @@ class AiRecommendationService
             $candidateLabels = [
                 'fiction', 'non-fiction', 'mystery', 'romance', 'science fiction',
                 'fantasy', 'thriller', 'biography', 'history', 'philosophy',
-                'classic', 'contemporary', 'young adult', 'children', 'poetry'
+                'classic', 'contemporary', 'young adult', 'children', 'poetry',
             ];
 
             // Make API call to Hugging Face
             $response = Http::withHeaders([
-                'Authorization' => 'Bearer ' . $this->apiKey,
+                'Authorization' => 'Bearer '.$this->apiKey,
                 'Content-Type' => 'application/json',
             ])->post($this->apiUrl, [
                 'inputs' => $text,
                 'parameters' => [
                     'candidate_labels' => $candidateLabels,
-                    'multi_label' => true
-                ]
+                    'multi_label' => true,
+                ],
             ]);
 
             if ($response->successful()) {
                 $data = $response->json();
+
                 return $this->processApiResponse($data, $book);
             } else {
                 Log::error('Hugging Face API error', [
                     'book_id' => $book->id,
                     'status' => $response->status(),
-                    'response' => $response->body()
+                    'response' => $response->body(),
                 ]);
+
                 return [];
             }
         } catch (Exception $e) {
             Log::error('AI Recommendation Service error', [
                 'book_id' => $book->id,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
+
             return [];
         }
     }
 
     /**
      * Prepare book text for AI analysis
-     *
-     * @param Book $book
-     * @return string
      */
     protected function prepareBookText(Book $book): string
     {
-        $text = $book->title . ' ' . $book->author;
+        $text = $book->title.' '.$book->author;
 
         if ($book->description) {
-            $text .= ' ' . $book->description;
+            $text .= ' '.$book->description;
         }
 
         return $text;
@@ -88,10 +86,6 @@ class AiRecommendationService
 
     /**
      * Process the API response and generate recommendations
-     *
-     * @param array $apiResponse
-     * @param Book $book
-     * @return array
      */
     protected function processApiResponse(array $apiResponse, Book $book): array
     {
@@ -126,11 +120,6 @@ class AiRecommendationService
 
     /**
      * Find similar books based on labels and scores
-     *
-     * @param Book $book
-     * @param array $labels
-     * @param array $scores
-     * @return array
      */
     protected function findSimilarBooks(Book $book, array $labels, array $scores): array
     {
@@ -144,10 +133,10 @@ class AiRecommendationService
             $score = $scores[$index] ?? 0.5;
 
             // Add similarity score to the book
-            $query->orWhere(function ($q) use ($label, $book) {
-                $q->where('title', 'like', '%' . $label . '%')
-                  ->orWhere('description', 'like', '%' . $label . '%')
-                  ->orWhere('author', 'like', '%' . $label . '%');
+            $query->orWhere(function ($q) use ($label) {
+                $q->where('title', 'like', '%'.$label.'%')
+                    ->orWhere('description', 'like', '%'.$label.'%')
+                    ->orWhere('author', 'like', '%'.$label.'%');
             });
         }
 
@@ -180,9 +169,6 @@ class AiRecommendationService
 
     /**
      * Get mock recommendations for testing when no similar books are found
-     *
-     * @param Book $book
-     * @return array
      */
     protected function getMockRecommendations(Book $book): array
     {
@@ -202,7 +188,7 @@ class AiRecommendationService
                 'description' => 'Another mock recommendation for testing.',
                 'price' => 12.99,
                 'similarity_score' => 0.75,
-            ]
+            ],
         ];
     }
 }

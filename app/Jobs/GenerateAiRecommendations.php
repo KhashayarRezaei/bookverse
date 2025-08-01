@@ -20,6 +20,7 @@ class GenerateAiRecommendations implements ShouldQueue
     use SerializesModels;
 
     public $book;
+
     public $timeout = 60; // 60 seconds timeout
 
     /**
@@ -42,7 +43,7 @@ class GenerateAiRecommendations implements ShouldQueue
             $recommendations = $aiService->getRecommendations($this->book);
 
             // Store recommendations in cache for 1 hour
-            if (!empty($recommendations)) {
+            if (! empty($recommendations)) {
                 Cache::put(
                     "book_recommendations_{$this->book->id}",
                     $recommendations,
@@ -51,17 +52,17 @@ class GenerateAiRecommendations implements ShouldQueue
 
                 Log::info('AI recommendations generated and cached', [
                     'book_id' => $this->book->id,
-                    'recommendations_count' => count($recommendations)
+                    'recommendations_count' => count($recommendations),
                 ]);
             } else {
                 Log::warning('No AI recommendations generated', [
-                    'book_id' => $this->book->id
+                    'book_id' => $this->book->id,
                 ]);
             }
         } catch (\Exception $e) {
             Log::error('Failed to generate AI recommendations', [
                 'book_id' => $this->book->id,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
 
             // Don't store anything in cache on error
@@ -76,7 +77,7 @@ class GenerateAiRecommendations implements ShouldQueue
     {
         Log::error('AI recommendations job failed', [
             'book_id' => $this->book->id,
-            'error' => $exception->getMessage()
+            'error' => $exception->getMessage(),
         ]);
     }
 }

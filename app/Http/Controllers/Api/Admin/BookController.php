@@ -4,10 +4,9 @@ namespace App\Http\Controllers\Api\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Book;
-use Illuminate\Http\Request;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Validation\ValidationException;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 /**
  * @OA\Tag(
@@ -26,29 +25,37 @@ class BookController extends Controller
      *     description="Retrieve all books with pagination for admin management",
      *     tags={"Admin"},
      *     security={{"bearerAuth":{}}},
+     *
      *     @OA\Parameter(
      *         name="page",
      *         in="query",
      *         description="Page number",
      *         required=false,
+     *
      *         @OA\Schema(type="integer", default=1)
      *     ),
+     *
      *     @OA\Parameter(
      *         name="per_page",
      *         in="query",
      *         description="Items per page",
      *         required=false,
+     *
      *         @OA\Schema(type="integer", default=15)
      *     ),
+     *
      *     @OA\Response(
      *         response=200,
      *         description="Books retrieved successfully",
+     *
      *         @OA\JsonContent(
+     *
      *             @OA\Property(property="data", type="array", @OA\Items(ref="#/components/schemas/Book")),
      *             @OA\Property(property="links", ref="#/components/schemas/PaginationLinks"),
      *             @OA\Property(property="meta", ref="#/components/schemas/PaginationMeta")
      *         )
      *     ),
+     *
      *     @OA\Response(
      *         response=403,
      *         description="Forbidden - Admin access required"
@@ -72,10 +79,13 @@ class BookController extends Controller
      *     description="Create a new book with admin privileges",
      *     tags={"Admin"},
      *     security={{"bearerAuth":{}}},
+     *
      *     @OA\RequestBody(
      *         required=true,
+     *
      *         @OA\JsonContent(
      *             required={"title","author","description","price","isbn","published_year"},
+     *
      *             @OA\Property(property="title", type="string", example="The Great Gatsby"),
      *             @OA\Property(property="author", type="string", example="F. Scott Fitzgerald"),
      *             @OA\Property(property="description", type="string", example="A story of the fabulously wealthy Jay Gatsby"),
@@ -84,14 +94,18 @@ class BookController extends Controller
      *             @OA\Property(property="published_year", type="integer", example=1925)
      *         )
      *     ),
+     *
      *     @OA\Response(
      *         response=201,
      *         description="Book created successfully",
+     *
      *         @OA\JsonContent(
+     *
      *             @OA\Property(property="message", type="string", example="Book created successfully"),
      *             @OA\Property(property="data", ref="#/components/schemas/Book")
      *         )
      *     ),
+     *
      *     @OA\Response(
      *         response=422,
      *         description="Validation error"
@@ -112,14 +126,14 @@ class BookController extends Controller
             'description' => 'required|string',
             'price' => 'required|numeric|min:0',
             'isbn' => 'required|string|max:20|unique:books',
-            'published_year' => 'required|integer|min:1800|max:' . (date('Y') + 1),
+            'published_year' => 'required|integer|min:1800|max:'.(date('Y') + 1),
         ]);
 
         $book = Book::create($validated);
 
         return response()->json([
             'message' => 'Book created successfully',
-            'data' => $book
+            'data' => $book,
         ], 201);
     }
 
@@ -130,20 +144,26 @@ class BookController extends Controller
      *     description="Retrieve a specific book by ID for admin management",
      *     tags={"Admin"},
      *     security={{"bearerAuth":{}}},
+     *
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
      *         description="Book ID",
      *         required=true,
+     *
      *         @OA\Schema(type="integer")
      *     ),
+     *
      *     @OA\Response(
      *         response=200,
      *         description="Book retrieved successfully",
+     *
      *         @OA\JsonContent(
+     *
      *             @OA\Property(property="data", ref="#/components/schemas/Book")
      *         )
      *     ),
+     *
      *     @OA\Response(
      *         response=404,
      *         description="Book not found"
@@ -168,16 +188,21 @@ class BookController extends Controller
      *     description="Update a book with admin privileges",
      *     tags={"Admin"},
      *     security={{"bearerAuth":{}}},
+     *
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
      *         description="Book ID",
      *         required=true,
+     *
      *         @OA\Schema(type="integer")
      *     ),
+     *
      *     @OA\RequestBody(
      *         required=true,
+     *
      *         @OA\JsonContent(
+     *
      *             @OA\Property(property="title", type="string", example="The Great Gatsby"),
      *             @OA\Property(property="author", type="string", example="F. Scott Fitzgerald"),
      *             @OA\Property(property="description", type="string", example="A story of the fabulously wealthy Jay Gatsby"),
@@ -186,14 +211,18 @@ class BookController extends Controller
      *             @OA\Property(property="published_year", type="integer", example=1925)
      *         )
      *     ),
+     *
      *     @OA\Response(
      *         response=200,
      *         description="Book updated successfully",
+     *
      *         @OA\JsonContent(
+     *
      *             @OA\Property(property="message", type="string", example="Book updated successfully"),
      *             @OA\Property(property="data", ref="#/components/schemas/Book")
      *         )
      *     ),
+     *
      *     @OA\Response(
      *         response=404,
      *         description="Book not found"
@@ -217,15 +246,15 @@ class BookController extends Controller
             'author' => 'sometimes|required|string|max:255',
             'description' => 'sometimes|required|string',
             'price' => 'sometimes|required|numeric|min:0',
-            'isbn' => 'sometimes|required|string|max:20|unique:books,isbn,' . $book->id,
-            'published_year' => 'sometimes|required|integer|min:1800|max:' . (date('Y') + 1),
+            'isbn' => 'sometimes|required|string|max:20|unique:books,isbn,'.$book->id,
+            'published_year' => 'sometimes|required|integer|min:1800|max:'.(date('Y') + 1),
         ]);
 
         $book->update($validated);
 
         return response()->json([
             'message' => 'Book updated successfully',
-            'data' => $book
+            'data' => $book,
         ]);
     }
 
@@ -236,20 +265,26 @@ class BookController extends Controller
      *     description="Delete a book with admin privileges",
      *     tags={"Admin"},
      *     security={{"bearerAuth":{}}},
+     *
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
      *         description="Book ID",
      *         required=true,
+     *
      *         @OA\Schema(type="integer")
      *     ),
+     *
      *     @OA\Response(
      *         response=200,
      *         description="Book deleted successfully",
+     *
      *         @OA\JsonContent(
+     *
      *             @OA\Property(property="message", type="string", example="Book deleted successfully")
      *         )
      *     ),
+     *
      *     @OA\Response(
      *         response=404,
      *         description="Book not found"
@@ -267,7 +302,7 @@ class BookController extends Controller
         $book->delete();
 
         return response()->json([
-            'message' => 'Book deleted successfully'
+            'message' => 'Book deleted successfully',
         ]);
     }
 }

@@ -9,7 +9,7 @@ class StripePaymentService implements PaymentGatewayInterface
 {
     public function charge(User $user, float $amount): array
     {
-        $transactionId = 'stripe_' . uniqid() . '_' . time();
+        $transactionId = 'stripe_'.uniqid().'_'.time();
 
         return [
             'status' => 'success',
@@ -17,7 +17,7 @@ class StripePaymentService implements PaymentGatewayInterface
             'amount' => $amount,
             'gateway' => 'stripe',
             'user_id' => $user->id,
-            'timestamp' => now()->toISOString()
+            'timestamp' => now()->toISOString(),
         ];
     }
 }

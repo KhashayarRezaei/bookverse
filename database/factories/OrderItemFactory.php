@@ -18,7 +18,7 @@ class OrderItemFactory extends Factory
     {
         $unitPrice = $this->faker->randomFloat(2, 5, 50);
         $quantity = $this->faker->numberBetween(1, 5);
-        
+
         return [
             'order_id' => \App\Models\Order::factory(),
             'book_id' => \App\Models\Book::factory(),

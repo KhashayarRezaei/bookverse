@@ -5,8 +5,8 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Book;
 use App\Services\AiSearchService;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 
 /**
@@ -30,31 +30,40 @@ class SearchController extends Controller
      *     summary="Search books semantically",
      *     description="Search books using AI-powered semantic search with Hugging Face embeddings",
      *     tags={"Search"},
+     *
      *     @OA\Parameter(
      *         name="q",
      *         in="query",
      *         description="Search query",
      *         required=true,
+     *
      *         @OA\Schema(type="string", example="science fiction space adventure")
      *     ),
+     *
      *     @OA\Parameter(
      *         name="limit",
      *         in="query",
      *         description="Number of results to return",
      *         required=false,
+     *
      *         @OA\Schema(type="integer", default=10)
      *     ),
+     *
      *     @OA\Parameter(
      *         name="min_score",
      *         in="query",
      *         description="Minimum similarity score (0-1)",
      *         required=false,
+     *
      *         @OA\Schema(type="number", format="float", default=0.3)
      *     ),
+     *
      *     @OA\Response(
      *         response=200,
      *         description="Search results retrieved successfully",
+     *
      *         @OA\JsonContent(
+     *
      *             @OA\Property(property="query", type="string"),
      *             @OA\Property(property="total_results", type="integer"),
      *             @OA\Property(property="results", type="array", @OA\Items(
@@ -65,6 +74,7 @@ class SearchController extends Controller
      *             @OA\Property(property="processing_time", type="number", format="float")
      *         )
      *     ),
+     *
      *     @OA\Response(
      *         response=400,
      *         description="Invalid search query"
@@ -88,7 +98,7 @@ class SearchController extends Controller
         $minScore = $request->get('min_score', 0.3);
 
         // Generate cache key based on search parameters
-        $cacheKey = "search:" . md5($query . $limit . $minScore);
+        $cacheKey = 'search:'.md5($query.$limit.$minScore);
 
         // Try to get cached results first
         $cachedResults = Cache::get($cacheKey);
@@ -109,7 +119,7 @@ class SearchController extends Controller
                 'total_results' => count($results),
                 'results' => $results,
                 'processing_time' => round($processingTime, 3),
-                'cached' => false
+                'cached' => false,
             ];
 
             // Cache results for 1 hour
@@ -120,7 +130,7 @@ class SearchController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'error' => 'Search service temporarily unavailable',
-                'message' => $e->getMessage()
+                'message' => $e->getMessage(),
             ], 500);
         }
     }
@@ -131,24 +141,31 @@ class SearchController extends Controller
      *     summary="Get search suggestions",
      *     description="Get search suggestions based on partial query",
      *     tags={"Search"},
+     *
      *     @OA\Parameter(
      *         name="q",
      *         in="query",
      *         description="Partial search query",
      *         required=true,
+     *
      *         @OA\Schema(type="string", example="sci")
      *     ),
+     *
      *     @OA\Parameter(
      *         name="limit",
      *         in="query",
      *         description="Number of suggestions to return",
      *         required=false,
+     *
      *         @OA\Schema(type="integer", default=5)
      *     ),
+     *
      *     @OA\Response(
      *         response=200,
      *         description="Search suggestions retrieved successfully",
+     *
      *         @OA\JsonContent(
+     *
      *             @OA\Property(property="query", type="string"),
      *             @OA\Property(property="suggestions", type="array", @OA\Items(type="string"))
      *         )
@@ -179,6 +196,7 @@ class SearchController extends Controller
                 if (stripos($book->author, $query) !== false) {
                     return $book->author;
                 }
+
                 return null;
             })
             ->filter()
@@ -189,7 +207,7 @@ class SearchController extends Controller
 
         return response()->json([
             'query' => $query,
-            'suggestions' => $suggestions
+            'suggestions' => $suggestions,
         ]);
     }
-} 
+}

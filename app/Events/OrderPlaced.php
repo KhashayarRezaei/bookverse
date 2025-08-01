@@ -3,9 +3,7 @@
 namespace App\Events;
 
 use App\Models\Order;
-use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
-use Illuminate\Broadcasting\PresenceChannel;
 use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
@@ -33,7 +31,7 @@ class OrderPlaced implements ShouldBroadcast
     public function broadcastOn(): array
     {
         return [
-            new PrivateChannel('user.' . $this->order->user_id),
+            new PrivateChannel('user.'.$this->order->user_id),
         ];
     }
 
@@ -44,7 +42,7 @@ class OrderPlaced implements ShouldBroadcast
     {
         return [
             'type' => 'order_placed',
-            'message' => 'Your order #' . $this->order->id . ' has been placed successfully!',
+            'message' => 'Your order #'.$this->order->id.' has been placed successfully!',
             'order_id' => $this->order->id,
             'total_amount' => $this->order->total_amount,
             'status' => $this->order->status,

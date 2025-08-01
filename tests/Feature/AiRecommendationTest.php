@@ -2,29 +2,31 @@
 
 namespace Tests\Feature;
 
-use Tests\TestCase;
-use App\Models\User;
-use App\Models\Book;
 use App\Jobs\GenerateAiRecommendations;
+use App\Models\Book;
+use App\Models\User;
 use App\Services\AiRecommendationService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Queue;
+use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Support\Facades\Queue;
+use Tests\TestCase;
 
 class AiRecommendationTest extends TestCase
 {
     use RefreshDatabase, WithFaker;
 
     protected $user;
+
     protected $book;
+
     protected $adminUser;
 
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         // Create a regular user
         $this->user = User::factory()->create([
             'email' => 'user@example.com',
@@ -55,11 +57,11 @@ class AiRecommendationTest extends TestCase
     public function test_authenticated_user_can_get_book_recommendations()
     {
         Queue::fake();
-        
+
         $token = auth()->login($this->user);
 
         $response = $this->withHeaders([
-            'Authorization' => 'Bearer ' . $token,
+            'Authorization' => 'Bearer '.$token,
             'Accept' => 'application/json',
         ])->getJson("/api/books/{$this->book->id}/recommendations");
 
@@ -74,8 +76,8 @@ class AiRecommendationTest extends TestCase
                         'description',
                         'price',
                         'similarity_score',
-                    ]
-                ]
+                    ],
+                ],
             ]);
 
         // Assert that the job was dispatched
@@ -99,7 +101,7 @@ class AiRecommendationTest extends TestCase
         $token = auth()->login($this->user);
 
         $response = $this->withHeaders([
-            'Authorization' => 'Bearer ' . $token,
+            'Authorization' => 'Bearer '.$token,
             'Accept' => 'application/json',
         ])->getJson('/api/books/99999/recommendations');
 
@@ -115,21 +117,21 @@ class AiRecommendationTest extends TestCase
             'api-inference.huggingface.co/*' => Http::response([
                 [
                     'label' => 'fiction',
-                    'score' => 0.95
+                    'score' => 0.95,
                 ],
                 [
                     'label' => 'classic',
-                    'score' => 0.87
-                ]
-            ], 200)
+                    'score' => 0.87,
+                ],
+            ], 200),
         ]);
 
-        $service = new AiRecommendationService();
+        $service = new AiRecommendationService;
         $recommendations = $service->getRecommendations($this->book);
 
         $this->assertIsArray($recommendations);
         $this->assertNotEmpty($recommendations);
-        
+
         // Verify the API was called
         Http::assertSent(function ($request) {
             return $request->url() === 'https://api-inference.huggingface.co/models/facebook/bart-large-mnli' &&
@@ -147,7 +149,7 @@ class AiRecommendationTest extends TestCase
                 'author' => 'Harper Lee',
                 'description' => 'A story of racial injustice in the American South.',
                 'price' => 14.99,
-                'similarity_score' => 0.95
+                'similarity_score' => 0.95,
             ],
             [
                 'id' => 3,
@@ -155,8 +157,8 @@ class AiRecommendationTest extends TestCase
                 'author' => 'George Orwell',
                 'description' => 'A dystopian novel about totalitarianism.',
                 'price' => 13.99,
-                'similarity_score' => 0.87
-            ]
+                'similarity_score' => 0.87,
+            ],
         ];
 
         $this->mock(AiRecommendationService::class, function ($mock) use ($fakeRecommendations) {
@@ -183,8 +185,8 @@ class AiRecommendationTest extends TestCase
                 'author' => 'Harper Lee',
                 'description' => 'A story of racial injustice in the American South.',
                 'price' => 14.99,
-                'similarity_score' => 0.95
-            ]
+                'similarity_score' => 0.95,
+            ],
         ];
 
         // Store recommendations in cache
@@ -193,32 +195,32 @@ class AiRecommendationTest extends TestCase
         $token = auth()->login($this->user);
 
         $response = $this->withHeaders([
-            'Authorization' => 'Bearer ' . $token,
+            'Authorization' => 'Bearer '.$token,
             'Accept' => 'application/json',
         ])->getJson("/api/books/{$this->book->id}/recommendations");
 
         $response->assertStatus(200)
             ->assertJson([
                 'message' => 'Recommendations retrieved successfully.',
-                'recommendations' => $cachedRecommendations
+                'recommendations' => $cachedRecommendations,
             ]);
     }
 
     public function test_recommendations_endpoint_returns_processing_message_when_no_cache()
     {
         Queue::fake();
-        
+
         $token = auth()->login($this->user);
 
         $response = $this->withHeaders([
-            'Authorization' => 'Bearer ' . $token,
+            'Authorization' => 'Bearer '.$token,
             'Accept' => 'application/json',
         ])->getJson("/api/books/{$this->book->id}/recommendations");
 
         $response->assertStatus(200)
             ->assertJson([
                 'message' => 'Generating recommendations. Please try again in a few moments.',
-                'recommendations' => []
+                'recommendations' => [],
             ]);
 
         // Assert that the job was dispatched
@@ -229,8 +231,8 @@ class AiRecommendationTest extends TestCase
     {
         Http::fake([
             'api-inference.huggingface.co/*' => Http::response([
-                'error' => 'Model not found'
-            ], 404)
+                'error' => 'Model not found',
+            ], 404),
         ]);
 
         $job = new GenerateAiRecommendations($this->book);
@@ -250,12 +252,12 @@ class AiRecommendationTest extends TestCase
             'api-inference.huggingface.co/models/facebook/bart-large-mnli' => Http::response([
                 [
                     'label' => 'fiction',
-                    'score' => 0.95
-                ]
-            ], 200)
+                    'score' => 0.95,
+                ],
+            ], 200),
         ]);
 
-        $service = new AiRecommendationService();
+        $service = new AiRecommendationService;
         $service->getRecommendations($this->book);
 
         Http::assertSent(function ($request) {
@@ -269,12 +271,12 @@ class AiRecommendationTest extends TestCase
     {
         // Set a mock API key for testing
         config(['services.huggingface.api_key' => 'test_api_key_123']);
-        
+
         Http::fake([
-            'api-inference.huggingface.co/*' => Http::response([], 200)
+            'api-inference.huggingface.co/*' => Http::response([], 200),
         ]);
 
-        $service = new AiRecommendationService();
+        $service = new AiRecommendationService;
         $service->getRecommendations($this->book);
 
         Http::assertSent(function ($request) {
@@ -291,8 +293,8 @@ class AiRecommendationTest extends TestCase
                 'author' => 'Test Author',
                 'description' => 'Test description',
                 'price' => 10.99,
-                'similarity_score' => 0.85
-            ]
+                'similarity_score' => 0.85,
+            ],
         ];
 
         // Store recommendations in cache with 1 hour expiration
@@ -315,8 +317,8 @@ class AiRecommendationTest extends TestCase
                 'author' => 'Shared Author',
                 'description' => 'Shared description',
                 'price' => 15.99,
-                'similarity_score' => 0.90
-            ]
+                'similarity_score' => 0.90,
+            ],
         ];
 
         // Store recommendations in cache
@@ -327,24 +329,24 @@ class AiRecommendationTest extends TestCase
 
         // First user gets recommendations
         $response1 = $this->withHeaders([
-            'Authorization' => 'Bearer ' . $token1,
+            'Authorization' => 'Bearer '.$token1,
             'Accept' => 'application/json',
         ])->getJson("/api/books/{$this->book->id}/recommendations");
 
         $response1->assertStatus(200)
             ->assertJson([
-                'recommendations' => $cachedRecommendations
+                'recommendations' => $cachedRecommendations,
             ]);
 
         // Second user gets the same recommendations
         $response2 = $this->withHeaders([
-            'Authorization' => 'Bearer ' . $token2,
+            'Authorization' => 'Bearer '.$token2,
             'Accept' => 'application/json',
         ])->getJson("/api/books/{$this->book->id}/recommendations");
 
         $response2->assertStatus(200)
             ->assertJson([
-                'recommendations' => $cachedRecommendations
+                'recommendations' => $cachedRecommendations,
             ]);
     }
-} 
+}

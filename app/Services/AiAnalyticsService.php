@@ -2,13 +2,14 @@
 
 namespace App\Services;
 
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
 class AiAnalyticsService
 {
     protected $apiUrl = 'https://api-inference.huggingface.co/models/gpt2';
+
     protected $apiKey;
 
     public function __construct()
@@ -24,21 +25,21 @@ class AiAnalyticsService
         try {
             $context = $this->prepareContext($salesData, $bookData, $userData);
             $prompt = $this->createPrompt($context);
-            
+
             $insights = $this->generateInsightsFromAI($prompt);
-            
+
             return [
                 'trends' => $insights['trends'] ?? 'No significant trends detected.',
                 'recommendations' => $insights['recommendations'] ?? ['Continue monitoring performance'],
-                'generated_at' => now()->toISOString()
+                'generated_at' => now()->toISOString(),
             ];
         } catch (\Exception $e) {
-            Log::error('AI Analytics error: ' . $e->getMessage());
-            
+            Log::error('AI Analytics error: '.$e->getMessage());
+
             return [
                 'trends' => $this->generateBasicTrends($salesData, $bookData, $userData),
                 'recommendations' => $this->generateBasicRecommendations($salesData, $bookData, $userData),
-                'generated_at' => now()->toISOString()
+                'generated_at' => now()->toISOString(),
             ];
         }
     }
@@ -57,7 +58,7 @@ class AiAnalyticsService
             'new_users' => $userData['new_users'] ?? 0,
             'active_users' => $userData['active_users'] ?? 0,
             'top_selling_books' => $salesData['top_selling_books'] ?? [],
-            'daily_sales' => $salesData['daily_sales'] ?? []
+            'daily_sales' => $salesData['daily_sales'] ?? [],
         ];
     }
 
@@ -93,8 +94,8 @@ Format as JSON with 'trends' and 'recommendations' fields.";
      */
     private function generateInsightsFromAI(string $prompt): array
     {
-        $cacheKey = 'ai_insights:' . md5($prompt);
-        
+        $cacheKey = 'ai_insights:'.md5($prompt);
+
         // Check cache first
         if (Cache::has($cacheKey)) {
             return Cache::get($cacheKey);
@@ -102,31 +103,30 @@ Format as JSON with 'trends' and 'recommendations' fields.";
 
         try {
             $response = Http::withHeaders([
-                'Authorization' => 'Bearer ' . $this->apiKey,
+                'Authorization' => 'Bearer '.$this->apiKey,
                 'Content-Type' => 'application/json',
             ])->post($this->apiUrl, [
                 'inputs' => $prompt,
                 'parameters' => [
                     'max_length' => 500,
                     'temperature' => 0.7,
-                    'return_full_text' => false
-                ]
+                    'return_full_text' => false,
+                ],
             ]);
 
             if ($response->successful()) {
                 $result = $response->json();
                 $insights = $this->parseAIResponse($result[0]['generated_text'] ?? '');
-                
+
                 // Cache for 1 hour
                 Cache::put($cacheKey, $insights, 3600);
-                
+
                 return $insights;
             }
 
-            throw new \Exception('AI API request failed: ' . $response->body());
-
+            throw new \Exception('AI API request failed: '.$response->body());
         } catch (\Exception $e) {
-            Log::error('AI API error: ' . $e->getMessage());
+            Log::error('AI API error: '.$e->getMessage());
             throw $e;
         }
     }
@@ -154,7 +154,7 @@ Format as JSON with 'trends' and 'recommendations' fields.";
 
         return [
             'trends' => $trends,
-            'recommendations' => $recommendations
+            'recommendations' => $recommendations,
         ];
     }
 
@@ -177,12 +177,12 @@ Format as JSON with 'trends' and 'recommendations' fields.";
     private function extractRecommendations(string $response): array
     {
         $recommendations = [];
-        
+
         // Look for numbered or bulleted recommendations
         if (preg_match_all('/(?:recommendations?|suggestions?)[:\s]*\n?((?:\d+\.|\*|\-)\s*.+?)(?=\n\d+\.|\n\*|\n\-|\n\n|$)/is', $response, $matches)) {
             foreach ($matches[1] as $match) {
                 $clean = trim(preg_replace('/^\d+\.\s*|\*\s*|\-\s*/', '', $match));
-                if (!empty($clean)) {
+                if (! empty($clean)) {
                     $recommendations[] = $clean;
                 }
             }
@@ -197,20 +197,20 @@ Format as JSON with 'trends' and 'recommendations' fields.";
     private function generateBasicTrends(array $salesData, array $bookData, array $userData): string
     {
         $trends = [];
-        
+
         if ($salesData['total_revenue'] > 0) {
             $trends[] = "Revenue generation is active with \${$salesData['total_revenue']} in sales";
         }
-        
+
         if ($userData['new_users'] > 0) {
             $trends[] = "User acquisition is positive with {$userData['new_users']} new users";
         }
-        
+
         if ($salesData['average_order_value'] > 0) {
             $trends[] = "Average order value is \${$salesData['average_order_value']}";
         }
 
-        return $trends ? implode('. ', $trends) . '.' : 'No significant trends detected in the current data.';
+        return $trends ? implode('. ', $trends).'.' : 'No significant trends detected in the current data.';
     }
 
     /**
@@ -221,22 +221,22 @@ Format as JSON with 'trends' and 'recommendations' fields.";
         $recommendations = [];
 
         if ($salesData['total_orders'] < 10) {
-            $recommendations[] = "Focus on increasing order volume through marketing campaigns";
+            $recommendations[] = 'Focus on increasing order volume through marketing campaigns';
         }
 
         if ($userData['new_users'] < 5) {
-            $recommendations[] = "Implement user acquisition strategies to grow customer base";
+            $recommendations[] = 'Implement user acquisition strategies to grow customer base';
         }
 
         if ($salesData['average_order_value'] < 50) {
-            $recommendations[] = "Consider upselling strategies to increase average order value";
+            $recommendations[] = 'Consider upselling strategies to increase average order value';
         }
 
         if (empty($recommendations)) {
-            $recommendations[] = "Continue monitoring performance metrics";
-            $recommendations[] = "Maintain current business strategies";
+            $recommendations[] = 'Continue monitoring performance metrics';
+            $recommendations[] = 'Maintain current business strategies';
         }
 
         return $recommendations;
     }
-} 
+}

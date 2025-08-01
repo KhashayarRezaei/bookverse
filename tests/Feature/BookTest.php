@@ -13,13 +13,15 @@ class BookTest extends TestCase
     use RefreshDatabase, WithFaker;
 
     private User $admin;
+
     private User $user;
+
     private array $validBookData;
 
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         // Create admin user
         $this->admin = User::factory()->create([
             'email' => 'admin@bookverse.com',
@@ -48,7 +50,7 @@ class BookTest extends TestCase
         $token = auth()->login($this->admin);
 
         $response = $this->withHeaders([
-            'Authorization' => 'Bearer ' . $token,
+            'Authorization' => 'Bearer '.$token,
         ])->postJson('/api/books', $this->validBookData);
 
         $response->assertStatus(201)
@@ -89,7 +91,7 @@ class BookTest extends TestCase
         $token = auth()->login($this->user);
 
         $response = $this->withHeaders([
-            'Authorization' => 'Bearer ' . $token,
+            'Authorization' => 'Bearer '.$token,
         ])->postJson('/api/books', $this->validBookData);
 
         $response->assertStatus(403)
@@ -191,7 +193,7 @@ class BookTest extends TestCase
         $token = auth()->login($this->admin);
 
         $response = $this->withHeaders([
-            'Authorization' => 'Bearer ' . $token,
+            'Authorization' => 'Bearer '.$token,
         ])->postJson('/api/books', []);
 
         $response->assertStatus(422)
@@ -213,7 +215,7 @@ class BookTest extends TestCase
         $invalidData['price'] = -10;
 
         $response = $this->withHeaders([
-            'Authorization' => 'Bearer ' . $token,
+            'Authorization' => 'Bearer '.$token,
         ])->postJson('/api/books', $invalidData);
 
         $response->assertStatus(422)
@@ -228,7 +230,7 @@ class BookTest extends TestCase
         $invalidData['published_year'] = 2030; // Future year
 
         $response = $this->withHeaders([
-            'Authorization' => 'Bearer ' . $token,
+            'Authorization' => 'Bearer '.$token,
         ])->postJson('/api/books', $invalidData);
 
         $response->assertStatus(422)
@@ -243,7 +245,7 @@ class BookTest extends TestCase
         $invalidData['isbn'] = 'invalid-isbn';
 
         $response = $this->withHeaders([
-            'Authorization' => 'Bearer ' . $token,
+            'Authorization' => 'Bearer '.$token,
         ])->postJson('/api/books', $invalidData);
 
         $response->assertStatus(422)
@@ -265,7 +267,7 @@ class BookTest extends TestCase
         ];
 
         $response = $this->withHeaders([
-            'Authorization' => 'Bearer ' . $token,
+            'Authorization' => 'Bearer '.$token,
         ])->putJson("/api/books/{$book->id}", $updateData);
 
         $response->assertStatus(200)
@@ -290,7 +292,7 @@ class BookTest extends TestCase
         $token = auth()->login($this->admin);
 
         $response = $this->withHeaders([
-            'Authorization' => 'Bearer ' . $token,
+            'Authorization' => 'Bearer '.$token,
         ])->deleteJson("/api/books/{$book->id}");
 
         $response->assertStatus(200)
@@ -309,7 +311,7 @@ class BookTest extends TestCase
         $token = auth()->login($this->user);
 
         $response = $this->withHeaders([
-            'Authorization' => 'Bearer ' . $token,
+            'Authorization' => 'Bearer '.$token,
         ])->putJson("/api/books/{$book->id}", $this->validBookData);
 
         $response->assertStatus(403)
@@ -324,7 +326,7 @@ class BookTest extends TestCase
         $token = auth()->login($this->user);
 
         $response = $this->withHeaders([
-            'Authorization' => 'Bearer ' . $token,
+            'Authorization' => 'Bearer '.$token,
         ])->deleteJson("/api/books/{$book->id}");
 
         $response->assertStatus(403)
@@ -332,4 +334,4 @@ class BookTest extends TestCase
                 'message' => 'Access denied. Admin privileges required.',
             ]);
     }
-} 
+}

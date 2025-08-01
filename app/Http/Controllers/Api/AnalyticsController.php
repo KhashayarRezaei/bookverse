@@ -7,10 +7,10 @@ use App\Models\Book;
 use App\Models\Order;
 use App\Models\User;
 use App\Services\AiAnalyticsService;
-use Illuminate\Http\Request;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 /**
  * @OA\Tag(
@@ -34,17 +34,22 @@ class AnalyticsController extends Controller
      *     description="Retrieve comprehensive analytics data for the dashboard",
      *     tags={"Analytics"},
      *     security={{"bearerAuth":{}}},
+     *
      *     @OA\Parameter(
      *         name="period",
      *         in="query",
      *         description="Time period for analytics (7d, 30d, 90d, 1y)",
      *         required=false,
+     *
      *         @OA\Schema(type="string", default="30d")
      *     ),
+     *
      *     @OA\Response(
      *         response=200,
      *         description="Analytics data retrieved successfully",
+     *
      *         @OA\JsonContent(
+     *
      *             @OA\Property(property="sales", type="object",
      *                 @OA\Property(property="total_revenue", type="number"),
      *                 @OA\Property(property="total_orders", type="integer"),
@@ -67,6 +72,7 @@ class AnalyticsController extends Controller
      *             )
      *         )
      *     ),
+     *
      *     @OA\Response(
      *         response=403,
      *         description="Forbidden - Admin access required"
@@ -80,13 +86,13 @@ class AnalyticsController extends Controller
 
         // Sales Analytics
         $salesData = $this->getSalesAnalytics($startDate);
-        
+
         // Book Analytics
         $bookData = $this->getBookAnalytics();
-        
+
         // User Analytics
         $userData = $this->getUserAnalytics($startDate);
-        
+
         // AI Insights
         $aiInsights = $this->aiAnalyticsService->generateInsights($salesData, $bookData, $userData);
 
@@ -96,7 +102,7 @@ class AnalyticsController extends Controller
             'users' => $userData,
             'ai_insights' => $aiInsights,
             'period' => $period,
-            'generated_at' => now()->toISOString()
+            'generated_at' => now()->toISOString(),
         ]);
     }
 
@@ -129,7 +135,7 @@ class AnalyticsController extends Controller
                 return [
                     'date' => $item->date,
                     'orders' => $item->orders,
-                    'revenue' => (float) $item->revenue
+                    'revenue' => (float) $item->revenue,
                 ];
             });
 
@@ -156,7 +162,7 @@ class AnalyticsController extends Controller
             'total_orders' => $totalOrders,
             'average_order_value' => round($averageOrderValue, 2),
             'daily_sales' => $dailySales,
-            'top_selling_books' => $topSellingBooks
+            'top_selling_books' => $topSellingBooks,
         ];
     }
 
@@ -178,13 +184,13 @@ class AnalyticsController extends Controller
                     'title' => $book->title,
                     'author' => $book->author,
                     'price' => $book->price,
-                    'total_orders' => $book->total_orders
+                    'total_orders' => $book->total_orders,
                 ];
             });
 
         return [
             'total_books' => $totalBooks,
-            'popular_books' => $popularBooks
+            'popular_books' => $popularBooks,
         ];
     }
 
@@ -195,7 +201,7 @@ class AnalyticsController extends Controller
     {
         $totalUsers = User::count();
         $newUsers = User::where('created_at', '>=', $startDate)->count();
-        
+
         // Active users (users with orders in the period)
         $activeUsers = User::whereHas('orders', function ($query) use ($startDate) {
             $query->where('created_at', '>=', $startDate);
@@ -213,7 +219,7 @@ class AnalyticsController extends Controller
             ->map(function ($item) {
                 return [
                     'date' => $item->date,
-                    'registrations' => $item->registrations
+                    'registrations' => $item->registrations,
                 ];
             });
 
@@ -221,7 +227,7 @@ class AnalyticsController extends Controller
             'total_users' => $totalUsers,
             'new_users' => $newUsers,
             'active_users' => $activeUsers,
-            'registration_trend' => $userRegistrationTrend
+            'registration_trend' => $userRegistrationTrend,
         ];
     }
 
@@ -238,4 +244,4 @@ class AnalyticsController extends Controller
             default => now()->subDays(30),
         };
     }
-} 
+}

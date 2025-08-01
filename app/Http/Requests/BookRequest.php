@@ -31,15 +31,13 @@ class BookRequest extends FormRequest
             'author' => 'required|string|max:255',
             'description' => 'required|string',
             'price' => 'required|numeric|min:0',
-            'published_year' => 'required|integer|min:1900|max:' . date('Y'),
-            'isbn' => $isbnRule . '|regex:/^[0-9\-]+$/',
+            'published_year' => 'required|integer|min:1900|max:'.date('Y'),
+            'isbn' => $isbnRule.'|regex:/^[0-9\-]+$/',
         ];
     }
 
     /**
      * Get custom messages for validator errors.
-     *
-     * @return array
      */
     public function messages(): array
     {

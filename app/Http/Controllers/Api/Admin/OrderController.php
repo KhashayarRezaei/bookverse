@@ -4,9 +4,9 @@ namespace App\Http\Controllers\Api\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Order;
-use Illuminate\Http\Request;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 /**
  * @OA\Tag(
@@ -25,36 +25,46 @@ class OrderController extends Controller
      *     description="Retrieve all orders with pagination for admin management",
      *     tags={"Admin"},
      *     security={{"bearerAuth":{}}},
+     *
      *     @OA\Parameter(
      *         name="page",
      *         in="query",
      *         description="Page number",
      *         required=false,
+     *
      *         @OA\Schema(type="integer", default=1)
      *     ),
+     *
      *     @OA\Parameter(
      *         name="per_page",
      *         in="query",
      *         description="Items per page",
      *         required=false,
+     *
      *         @OA\Schema(type="integer", default=15)
      *     ),
+     *
      *     @OA\Parameter(
      *         name="status",
      *         in="query",
      *         description="Filter by order status",
      *         required=false,
+     *
      *         @OA\Schema(type="string", enum={"pending", "paid", "shipped", "delivered", "cancelled"})
      *     ),
+     *
      *     @OA\Response(
      *         response=200,
      *         description="Orders retrieved successfully",
+     *
      *         @OA\JsonContent(
+     *
      *             @OA\Property(property="data", type="array", @OA\Items(ref="#/components/schemas/Order")),
      *             @OA\Property(property="links", ref="#/components/schemas/PaginationLinks"),
      *             @OA\Property(property="meta", ref="#/components/schemas/PaginationMeta")
      *         )
      *     ),
+     *
      *     @OA\Response(
      *         response=403,
      *         description="Forbidden - Admin access required"
@@ -86,20 +96,26 @@ class OrderController extends Controller
      *     description="Retrieve a specific order by ID for admin management",
      *     tags={"Admin"},
      *     security={{"bearerAuth":{}}},
+     *
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
      *         description="Order ID",
      *         required=true,
+     *
      *         @OA\Schema(type="integer")
      *     ),
+     *
      *     @OA\Response(
      *         response=200,
      *         description="Order retrieved successfully",
+     *
      *         @OA\JsonContent(
+     *
      *             @OA\Property(property="data", ref="#/components/schemas/Order")
      *         )
      *     ),
+     *
      *     @OA\Response(
      *         response=404,
      *         description="Order not found"
@@ -115,7 +131,7 @@ class OrderController extends Controller
         $this->authorize('view', $order);
 
         return response()->json([
-            'data' => $order->load(['user', 'items.book'])
+            'data' => $order->load(['user', 'items.book']),
         ]);
     }
 
@@ -126,28 +142,37 @@ class OrderController extends Controller
      *     description="Update order status with admin privileges",
      *     tags={"Admin"},
      *     security={{"bearerAuth":{}}},
+     *
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
      *         description="Order ID",
      *         required=true,
+     *
      *         @OA\Schema(type="integer")
      *     ),
+     *
      *     @OA\RequestBody(
      *         required=true,
+     *
      *         @OA\JsonContent(
      *             required={"status"},
+     *
      *             @OA\Property(property="status", type="string", enum={"pending", "paid", "shipped", "delivered", "cancelled"}, example="shipped")
      *         )
      *     ),
+     *
      *     @OA\Response(
      *         response=200,
      *         description="Order updated successfully",
+     *
      *         @OA\JsonContent(
+     *
      *             @OA\Property(property="message", type="string", example="Order status updated successfully"),
      *             @OA\Property(property="data", ref="#/components/schemas/Order")
      *         )
      *     ),
+     *
      *     @OA\Response(
      *         response=404,
      *         description="Order not found"
@@ -174,7 +199,7 @@ class OrderController extends Controller
 
         return response()->json([
             'message' => 'Order status updated successfully',
-            'data' => $order->load(['user', 'items.book'])
+            'data' => $order->load(['user', 'items.book']),
         ]);
     }
 
@@ -185,10 +210,13 @@ class OrderController extends Controller
      *     description="Retrieve order statistics for admin dashboard",
      *     tags={"Admin"},
      *     security={{"bearerAuth":{}}},
+     *
      *     @OA\Response(
      *         response=200,
      *         description="Order statistics retrieved successfully",
+     *
      *         @OA\JsonContent(
+     *
      *             @OA\Property(property="total_orders", type="integer", example=150),
      *             @OA\Property(property="total_revenue", type="number", format="float", example=12500.50),
      *             @OA\Property(property="pending_orders", type="integer", example=5),
@@ -198,6 +226,7 @@ class OrderController extends Controller
      *             @OA\Property(property="average_order_value", type="number", format="float", example=83.34)
      *         )
      *     ),
+     *
      *     @OA\Response(
      *         response=403,
      *         description="Forbidden - Admin access required"
@@ -223,7 +252,7 @@ class OrderController extends Controller
             'shipped_orders' => $shippedOrders,
             'delivered_orders' => $deliveredOrders,
             'cancelled_orders' => $cancelledOrders,
-            'average_order_value' => round($averageOrderValue, 2)
+            'average_order_value' => round($averageOrderValue, 2),
         ]);
     }
 }

@@ -23,20 +23,26 @@ class AuthController extends Controller
      *     summary="Register a new user",
      *     description="Create a new user account and return JWT token",
      *     tags={"Authentication"},
+     *
      *     @OA\RequestBody(
      *         required=true,
+     *
      *         @OA\JsonContent(
      *             required={"name","email","password","password_confirmation"},
+     *
      *             @OA\Property(property="name", type="string", example="John Doe", description="User's full name"),
      *             @OA\Property(property="email", type="string", format="email", example="john@example.com", description="User's email address"),
      *             @OA\Property(property="password", type="string", format="password", example="password123", description="User's password (min 8 characters)"),
      *             @OA\Property(property="password_confirmation", type="string", format="password", example="password123", description="Password confirmation")
      *         )
      *     ),
+     *
      *     @OA\Response(
      *         response=201,
      *         description="User successfully registered",
+     *
      *         @OA\JsonContent(
+     *
      *             @OA\Property(property="message", type="string", example="User successfully registered"),
      *             @OA\Property(property="user", type="object",
      *                 @OA\Property(property="id", type="integer", example=1),
@@ -50,10 +56,13 @@ class AuthController extends Controller
      *             @OA\Property(property="expires_in", type="integer", example=3600)
      *         )
      *     ),
+     *
      *     @OA\Response(
      *         response=422,
      *         description="Validation error",
+     *
      *         @OA\JsonContent(
+     *
      *             @OA\Property(property="message", type="string", example="Validation failed"),
      *             @OA\Property(property="errors", type="object",
      *                 @OA\Property(property="email", type="array", @OA\Items(type="string", example="The email has already been taken.")),
@@ -101,34 +110,46 @@ class AuthController extends Controller
      *     summary="Login user",
      *     description="Authenticate user and return JWT token",
      *     tags={"Authentication"},
+     *
      *     @OA\RequestBody(
      *         required=true,
+     *
      *         @OA\JsonContent(
      *             required={"email","password"},
+     *
      *             @OA\Property(property="email", type="string", format="email", example="john@example.com", description="User's email address"),
      *             @OA\Property(property="password", type="string", format="password", example="password123", description="User's password")
      *         )
      *     ),
+     *
      *     @OA\Response(
      *         response=200,
      *         description="Login successful",
+     *
      *         @OA\JsonContent(
+     *
      *             @OA\Property(property="access_token", type="string", example="eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9..."),
      *             @OA\Property(property="token_type", type="string", example="bearer"),
      *             @OA\Property(property="expires_in", type="integer", example=3600)
      *         )
      *     ),
+     *
      *     @OA\Response(
      *         response=401,
      *         description="Unauthorized",
+     *
      *         @OA\JsonContent(
+     *
      *             @OA\Property(property="message", type="string", example="Unauthorized")
      *         )
      *     ),
+     *
      *     @OA\Response(
      *         response=422,
      *         description="Validation error",
+     *
      *         @OA\JsonContent(
+     *
      *             @OA\Property(property="message", type="string", example="Validation failed"),
      *             @OA\Property(property="errors", type="object",
      *                 @OA\Property(property="email", type="array", @OA\Items(type="string", example="The email field is required.")),
@@ -154,7 +175,7 @@ class AuthController extends Controller
 
         $credentials = $request->only('email', 'password');
 
-        if (!$token = Auth::attempt($credentials)) {
+        if (! $token = Auth::attempt($credentials)) {
             return response()->json([
                 'message' => 'Unauthorized',
             ], 401);
@@ -174,17 +195,23 @@ class AuthController extends Controller
      *     description="Invalidate the current JWT token",
      *     tags={"Authentication"},
      *     security={{"bearerAuth":{}}},
+     *
      *     @OA\Response(
      *         response=200,
      *         description="Successfully logged out",
+     *
      *         @OA\JsonContent(
+     *
      *             @OA\Property(property="message", type="string", example="Successfully logged out")
      *         )
      *     ),
+     *
      *     @OA\Response(
      *         response=401,
      *         description="Unauthorized",
+     *
      *         @OA\JsonContent(
+     *
      *             @OA\Property(property="message", type="string", example="Unauthenticated.")
      *         )
      *     )
@@ -206,19 +233,25 @@ class AuthController extends Controller
      *     description="Get a new JWT token using the current token",
      *     tags={"Authentication"},
      *     security={{"bearerAuth":{}}},
+     *
      *     @OA\Response(
      *         response=200,
      *         description="Token refreshed successfully",
+     *
      *         @OA\JsonContent(
+     *
      *             @OA\Property(property="access_token", type="string", example="eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9..."),
      *             @OA\Property(property="token_type", type="string", example="bearer"),
      *             @OA\Property(property="expires_in", type="integer", example=3600)
      *         )
      *     ),
+     *
      *     @OA\Response(
      *         response=401,
      *         description="Unauthorized",
+     *
      *         @OA\JsonContent(
+     *
      *             @OA\Property(property="message", type="string", example="Unauthenticated.")
      *         )
      *     )
@@ -240,10 +273,13 @@ class AuthController extends Controller
      *     description="Get the authenticated user's profile information",
      *     tags={"Authentication"},
      *     security={{"bearerAuth":{}}},
+     *
      *     @OA\Response(
      *         response=200,
      *         description="User profile retrieved successfully",
+     *
      *         @OA\JsonContent(
+     *
      *             @OA\Property(property="id", type="integer", example=1),
      *             @OA\Property(property="name", type="string", example="John Doe"),
      *             @OA\Property(property="email", type="string", example="john@example.com"),
@@ -252,10 +288,13 @@ class AuthController extends Controller
      *             @OA\Property(property="updated_at", type="string", format="date-time")
      *         )
      *     ),
+     *
      *     @OA\Response(
      *         response=401,
      *         description="Unauthorized",
+     *
      *         @OA\JsonContent(
+     *
      *             @OA\Property(property="message", type="string", example="Unauthenticated.")
      *         )
      *     )

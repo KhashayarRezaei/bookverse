@@ -5,7 +5,6 @@ namespace Tests\Feature;
 use App\Events\OrderPlaced;
 use App\Models\Book;
 use App\Models\Order;
-use App\Models\OrderItem;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
@@ -17,15 +16,19 @@ class OrderTest extends TestCase
     use RefreshDatabase, WithFaker;
 
     private User $user;
+
     private Book $book1;
+
     private Book $book2;
+
     private Book $book3;
+
     private array $validOrderData;
 
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         // Create user
         $this->user = User::factory()->create([
             'email' => 'user@bookverse.com',
@@ -61,11 +64,11 @@ class OrderTest extends TestCase
     public function test_authenticated_user_can_create_order_with_valid_data()
     {
         Event::fake();
-        
+
         $token = auth()->login($this->user);
 
         $response = $this->withHeaders([
-            'Authorization' => 'Bearer ' . $token,
+            'Authorization' => 'Bearer '.$token,
         ])->postJson('/api/orders', $this->validOrderData);
 
         $response->assertStatus(201)
@@ -152,7 +155,7 @@ class OrderTest extends TestCase
         $token = auth()->login($this->user);
 
         $response = $this->withHeaders([
-            'Authorization' => 'Bearer ' . $token,
+            'Authorization' => 'Bearer '.$token,
         ])->getJson('/api/orders');
 
         $response->assertStatus(200)
@@ -199,7 +202,7 @@ class OrderTest extends TestCase
         $token = auth()->login($this->user);
 
         $response = $this->withHeaders([
-            'Authorization' => 'Bearer ' . $token,
+            'Authorization' => 'Bearer '.$token,
         ])->getJson('/api/orders');
 
         $response->assertStatus(200);
@@ -216,7 +219,7 @@ class OrderTest extends TestCase
         $token = auth()->login($this->user);
 
         $response = $this->withHeaders([
-            'Authorization' => 'Bearer ' . $token,
+            'Authorization' => 'Bearer '.$token,
         ])->getJson("/api/orders/{$order->id}");
 
         $response->assertStatus(200)
@@ -252,7 +255,7 @@ class OrderTest extends TestCase
         $token = auth()->login($this->user);
 
         $response = $this->withHeaders([
-            'Authorization' => 'Bearer ' . $token,
+            'Authorization' => 'Bearer '.$token,
         ])->getJson("/api/orders/{$order->id}");
 
         $response->assertStatus(404)
@@ -266,7 +269,7 @@ class OrderTest extends TestCase
         $token = auth()->login($this->user);
 
         $response = $this->withHeaders([
-            'Authorization' => 'Bearer ' . $token,
+            'Authorization' => 'Bearer '.$token,
         ])->postJson('/api/orders', [
             'payment_method' => 'stripe',
         ]);
@@ -280,7 +283,7 @@ class OrderTest extends TestCase
         $token = auth()->login($this->user);
 
         $response = $this->withHeaders([
-            'Authorization' => 'Bearer ' . $token,
+            'Authorization' => 'Bearer '.$token,
         ])->postJson('/api/orders', [
             'items' => [],
             'payment_method' => 'stripe',
@@ -295,7 +298,7 @@ class OrderTest extends TestCase
         $token = auth()->login($this->user);
 
         $response = $this->withHeaders([
-            'Authorization' => 'Bearer ' . $token,
+            'Authorization' => 'Bearer '.$token,
         ])->postJson('/api/orders', [
             'items' => [
                 ['book_id' => 999, 'quantity' => 1],
@@ -312,7 +315,7 @@ class OrderTest extends TestCase
         $token = auth()->login($this->user);
 
         $response = $this->withHeaders([
-            'Authorization' => 'Bearer ' . $token,
+            'Authorization' => 'Bearer '.$token,
         ])->postJson('/api/orders', [
             'items' => [
                 ['book_id' => $this->book1->id, 'quantity' => 0],
@@ -329,7 +332,7 @@ class OrderTest extends TestCase
         $token = auth()->login($this->user);
 
         $response = $this->withHeaders([
-            'Authorization' => 'Bearer ' . $token,
+            'Authorization' => 'Bearer '.$token,
         ])->postJson('/api/orders', [
             'items' => [
                 ['book_id' => $this->book1->id, 'quantity' => 1],
@@ -345,7 +348,7 @@ class OrderTest extends TestCase
         $token = auth()->login($this->user);
 
         $response = $this->withHeaders([
-            'Authorization' => 'Bearer ' . $token,
+            'Authorization' => 'Bearer '.$token,
         ])->postJson('/api/orders', [
             'items' => [
                 ['book_id' => $this->book1->id, 'quantity' => 1],
@@ -360,7 +363,7 @@ class OrderTest extends TestCase
     public function test_order_creation_with_paypal_payment_method()
     {
         Event::fake();
-        
+
         $token = auth()->login($this->user);
 
         $orderData = [
@@ -371,7 +374,7 @@ class OrderTest extends TestCase
         ];
 
         $response = $this->withHeaders([
-            'Authorization' => 'Bearer ' . $token,
+            'Authorization' => 'Bearer '.$token,
         ])->postJson('/api/orders', $orderData);
 
         $response->assertStatus(201)
@@ -393,7 +396,7 @@ class OrderTest extends TestCase
     public function test_order_creation_with_multiple_items_calculates_total_correctly()
     {
         Event::fake();
-        
+
         $token = auth()->login($this->user);
 
         $orderData = [
@@ -406,7 +409,7 @@ class OrderTest extends TestCase
         ];
 
         $response = $this->withHeaders([
-            'Authorization' => 'Bearer ' . $token,
+            'Authorization' => 'Bearer '.$token,
         ])->postJson('/api/orders', $orderData);
 
         $response->assertStatus(201);
@@ -424,11 +427,11 @@ class OrderTest extends TestCase
     public function test_order_items_are_saved_with_correct_prices()
     {
         Event::fake();
-        
+
         $token = auth()->login($this->user);
 
         $response = $this->withHeaders([
-            'Authorization' => 'Bearer ' . $token,
+            'Authorization' => 'Bearer '.$token,
         ])->postJson('/api/orders', $this->validOrderData);
 
         $response->assertStatus(201);
@@ -449,4 +452,4 @@ class OrderTest extends TestCase
             'total_price' => 9.99,
         ]);
     }
-} 
+}

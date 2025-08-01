@@ -4,10 +4,9 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\BookRequest;
-use App\Models\Book;
 use App\Jobs\GenerateAiRecommendations;
 use App\Jobs\GenerateBookSummaryJob;
-use Illuminate\Http\Request;
+use App\Models\Book;
 use Illuminate\Support\Facades\Cache;
 
 /**
@@ -15,7 +14,6 @@ use Illuminate\Support\Facades\Cache;
  *     name="Books",
  *     description="Book management endpoints"
  * )
- * 
  * @OA\Tag(
  *     name="AI Features",
  *     description="AI-powered recommendations and summaries"
@@ -29,17 +27,22 @@ class BookController extends Controller
      *     summary="List all books",
      *     description="Get a paginated list of all books",
      *     tags={"Books"},
+     *
      *     @OA\Parameter(
      *         name="page",
      *         in="query",
      *         description="Page number for pagination",
      *         required=false,
+     *
      *         @OA\Schema(type="integer", default=1)
      *     ),
+     *
      *     @OA\Response(
      *         response=200,
      *         description="List of books retrieved successfully",
+     *
      *         @OA\JsonContent(
+     *
      *             @OA\Property(property="current_page", type="integer", example=1),
      *             @OA\Property(property="data", type="array", @OA\Items(
      *                 @OA\Property(property="id", type="integer", example=1),
@@ -80,10 +83,13 @@ class BookController extends Controller
      *     description="Create a new book (Admin only)",
      *     tags={"Books"},
      *     security={{"bearerAuth":{}}},
+     *
      *     @OA\RequestBody(
      *         required=true,
+     *
      *         @OA\JsonContent(
      *             required={"title","author","description","price","published_year","isbn"},
+     *
      *             @OA\Property(property="title", type="string", example="The Great Gatsby", description="Book title"),
      *             @OA\Property(property="author", type="string", example="F. Scott Fitzgerald", description="Book author"),
      *             @OA\Property(property="description", type="string", example="A story of the fabulously wealthy Jay Gatsby...", description="Book description"),
@@ -92,10 +98,13 @@ class BookController extends Controller
      *             @OA\Property(property="isbn", type="string", example="978-0743273565", description="ISBN number")
      *         )
      *     ),
+     *
      *     @OA\Response(
      *         response=201,
      *         description="Book created successfully",
+     *
      *         @OA\JsonContent(
+     *
      *             @OA\Property(property="message", type="string", example="Book created successfully."),
      *             @OA\Property(property="book", type="object",
      *                 @OA\Property(property="id", type="integer", example=1),
@@ -110,24 +119,33 @@ class BookController extends Controller
      *             )
      *         )
      *     ),
+     *
      *     @OA\Response(
      *         response=401,
      *         description="Unauthorized",
+     *
      *         @OA\JsonContent(
+     *
      *             @OA\Property(property="message", type="string", example="Unauthenticated.")
      *         )
      *     ),
+     *
      *     @OA\Response(
      *         response=403,
      *         description="Forbidden - Admin access required",
+     *
      *         @OA\JsonContent(
+     *
      *             @OA\Property(property="message", type="string", example="Access denied. Admin privileges required.")
      *         )
      *     ),
+     *
      *     @OA\Response(
      *         response=422,
      *         description="Validation error",
+     *
      *         @OA\JsonContent(
+     *
      *             @OA\Property(property="message", type="string", example="Validation failed"),
      *             @OA\Property(property="errors", type="object",
      *                 @OA\Property(property="title", type="array", @OA\Items(type="string", example="The title field is required.")),
@@ -153,17 +171,22 @@ class BookController extends Controller
      *     summary="Get a specific book",
      *     description="Retrieve details of a specific book by ID",
      *     tags={"Books"},
+     *
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
      *         description="Book ID",
      *         required=true,
+     *
      *         @OA\Schema(type="integer", example=1)
      *     ),
+     *
      *     @OA\Response(
      *         response=200,
      *         description="Book retrieved successfully",
+     *
      *         @OA\JsonContent(
+     *
      *             @OA\Property(property="data", type="object",
      *                 @OA\Property(property="id", type="integer", example=1),
      *                 @OA\Property(property="title", type="string", example="The Great Gatsby"),
@@ -177,10 +200,13 @@ class BookController extends Controller
      *             )
      *         )
      *     ),
+     *
      *     @OA\Response(
      *         response=404,
      *         description="Book not found",
+     *
      *         @OA\JsonContent(
+     *
      *             @OA\Property(property="message", type="string", example="Book not found.")
      *         )
      *     )
@@ -190,7 +216,7 @@ class BookController extends Controller
     {
         $book = Book::find($id);
 
-        if (!$book) {
+        if (! $book) {
             return response()->json([
                 'message' => 'Book not found.',
             ], 404);
@@ -208,16 +234,21 @@ class BookController extends Controller
      *     description="Update an existing book (Admin only)",
      *     tags={"Books"},
      *     security={{"bearerAuth":{}}},
+     *
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
      *         description="Book ID",
      *         required=true,
+     *
      *         @OA\Schema(type="integer", example=1)
      *     ),
+     *
      *     @OA\RequestBody(
      *         required=true,
+     *
      *         @OA\JsonContent(
+     *
      *             @OA\Property(property="title", type="string", example="The Great Gatsby (Updated)", description="Book title"),
      *             @OA\Property(property="author", type="string", example="F. Scott Fitzgerald", description="Book author"),
      *             @OA\Property(property="description", type="string", example="A story of the fabulously wealthy Jay Gatsby...", description="Book description"),
@@ -226,10 +257,13 @@ class BookController extends Controller
      *             @OA\Property(property="isbn", type="string", example="978-0743273565", description="ISBN number")
      *         )
      *     ),
+     *
      *     @OA\Response(
      *         response=200,
      *         description="Book updated successfully",
+     *
      *         @OA\JsonContent(
+     *
      *             @OA\Property(property="message", type="string", example="Book updated successfully."),
      *             @OA\Property(property="book", type="object",
      *                 @OA\Property(property="id", type="integer", example=1),
@@ -244,31 +278,43 @@ class BookController extends Controller
      *             )
      *         )
      *     ),
+     *
      *     @OA\Response(
      *         response=401,
      *         description="Unauthorized",
+     *
      *         @OA\JsonContent(
+     *
      *             @OA\Property(property="message", type="string", example="Unauthenticated.")
      *         )
      *     ),
+     *
      *     @OA\Response(
      *         response=403,
      *         description="Forbidden - Admin access required",
+     *
      *         @OA\JsonContent(
+     *
      *             @OA\Property(property="message", type="string", example="Access denied. Admin privileges required.")
      *         )
      *     ),
+     *
      *     @OA\Response(
      *         response=404,
      *         description="Book not found",
+     *
      *         @OA\JsonContent(
+     *
      *             @OA\Property(property="message", type="string", example="Book not found.")
      *         )
      *     ),
+     *
      *     @OA\Response(
      *         response=422,
      *         description="Validation error",
+     *
      *         @OA\JsonContent(
+     *
      *             @OA\Property(property="message", type="string", example="Validation failed"),
      *             @OA\Property(property="errors", type="object",
      *                 @OA\Property(property="title", type="array", @OA\Items(type="string", example="The title field is required.")),
@@ -282,7 +328,7 @@ class BookController extends Controller
     {
         $book = Book::find($id);
 
-        if (!$book) {
+        if (! $book) {
             return response()->json([
                 'message' => 'Book not found.',
             ], 404);
@@ -303,38 +349,52 @@ class BookController extends Controller
      *     description="Delete an existing book (Admin only)",
      *     tags={"Books"},
      *     security={{"bearerAuth":{}}},
+     *
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
      *         description="Book ID",
      *         required=true,
+     *
      *         @OA\Schema(type="integer", example=1)
      *     ),
+     *
      *     @OA\Response(
      *         response=200,
      *         description="Book deleted successfully",
+     *
      *         @OA\JsonContent(
+     *
      *             @OA\Property(property="message", type="string", example="Book deleted successfully.")
      *         )
      *     ),
+     *
      *     @OA\Response(
      *         response=401,
      *         description="Unauthorized",
+     *
      *         @OA\JsonContent(
+     *
      *             @OA\Property(property="message", type="string", example="Unauthenticated.")
      *         )
      *     ),
+     *
      *     @OA\Response(
      *         response=403,
      *         description="Forbidden - Admin access required",
+     *
      *         @OA\JsonContent(
+     *
      *             @OA\Property(property="message", type="string", example="Access denied. Admin privileges required.")
      *         )
      *     ),
+     *
      *     @OA\Response(
      *         response=404,
      *         description="Book not found",
+     *
      *         @OA\JsonContent(
+     *
      *             @OA\Property(property="message", type="string", example="Book not found.")
      *         )
      *     )
@@ -344,7 +404,7 @@ class BookController extends Controller
     {
         $book = Book::find($id);
 
-        if (!$book) {
+        if (! $book) {
             return response()->json([
                 'message' => 'Book not found.',
             ], 404);
@@ -364,19 +424,25 @@ class BookController extends Controller
      *     description="Get AI-powered book recommendations based on the specified book",
      *     tags={"AI Features"},
      *     security={{"bearerAuth":{}}},
+     *
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
      *         description="Book ID",
      *         required=true,
+     *
      *         @OA\Schema(type="integer", example=1)
      *     ),
+     *
      *     @OA\Response(
      *         response=200,
      *         description="Recommendations response",
+     *
      *         @OA\JsonContent(
      *             oneOf={
+     *
      *                 @OA\Schema(
+     *
      *                     @OA\Property(property="message", type="string", example="Recommendations retrieved successfully."),
      *                     @OA\Property(property="recommendations", type="array", @OA\Items(
      *                         @OA\Property(property="id", type="integer", example=2),
@@ -388,24 +454,32 @@ class BookController extends Controller
      *                         @OA\Property(property="reason", type="string", example="Similar themes and writing style")
      *                     ))
      *                 ),
+     *
      *                 @OA\Schema(
+     *
      *                     @OA\Property(property="message", type="string", example="Generating recommendations. Please try again in a few moments."),
      *                     @OA\Property(property="recommendations", type="array", @OA\Items())
      *                 )
      *             }
      *         )
      *     ),
+     *
      *     @OA\Response(
      *         response=401,
      *         description="Unauthorized",
+     *
      *         @OA\JsonContent(
+     *
      *             @OA\Property(property="message", type="string", example="Unauthenticated.")
      *         )
      *     ),
+     *
      *     @OA\Response(
      *         response=404,
      *         description="Book not found",
+     *
      *         @OA\JsonContent(
+     *
      *             @OA\Property(property="message", type="string", example="Book not found.")
      *         )
      *     )
@@ -415,7 +489,7 @@ class BookController extends Controller
     {
         $book = Book::find($id);
 
-        if (!$book) {
+        if (! $book) {
             return response()->json([
                 'message' => 'Book not found.',
             ], 404);
@@ -447,19 +521,25 @@ class BookController extends Controller
      *     description="Get AI-powered book summary using Hugging Face GPT-2 model",
      *     tags={"AI Features"},
      *     security={{"bearerAuth":{}}},
+     *
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
      *         description="Book ID",
      *         required=true,
+     *
      *         @OA\Schema(type="integer", example=1)
      *     ),
+     *
      *     @OA\Response(
      *         response=200,
      *         description="Summary response",
+     *
      *         @OA\JsonContent(
      *             oneOf={
+     *
      *                 @OA\Schema(
+     *
      *                     @OA\Property(property="message", type="string", example="Summary retrieved successfully."),
      *                     @OA\Property(property="summary", type="object",
      *                         @OA\Property(property="status", type="string", example="completed"),
@@ -471,7 +551,9 @@ class BookController extends Controller
      *                         @OA\Property(property="book_title", type="string", example="The Great Gatsby")
      *                     )
      *                 ),
+     *
      *                 @OA\Schema(
+     *
      *                     @OA\Property(property="message", type="string", example="Generating summary. Please try again in a few moments."),
      *                     @OA\Property(property="summary", type="object",
      *                         @OA\Property(property="status", type="string", example="processing"),
@@ -482,17 +564,23 @@ class BookController extends Controller
      *             }
      *         )
      *     ),
+     *
      *     @OA\Response(
      *         response=401,
      *         description="Unauthorized",
+     *
      *         @OA\JsonContent(
+     *
      *             @OA\Property(property="message", type="string", example="Unauthenticated.")
      *         )
      *     ),
+     *
      *     @OA\Response(
      *         response=404,
      *         description="Book not found",
+     *
      *         @OA\JsonContent(
+     *
      *             @OA\Property(property="message", type="string", example="Book not found.")
      *         )
      *     )
@@ -502,7 +590,7 @@ class BookController extends Controller
     {
         $book = Book::find($id);
 
-        if (!$book) {
+        if (! $book) {
             return response()->json([
                 'message' => 'Book not found.',
             ], 404);
@@ -526,7 +614,7 @@ class BookController extends Controller
             'summary' => [
                 'status' => 'processing',
                 'content' => null,
-                'generated_at' => null
+                'generated_at' => null,
             ],
         ]);
     }
