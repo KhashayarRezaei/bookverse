@@ -190,5 +190,8 @@ jobs:
     - name: Install dependencies
       run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
 
+    - name: Install security checker
+      run: composer require --dev enlightn/security-checker
+
     - name: Run security check
       run: ./vendor/bin/security-checker security:check composer.lock 
