@@ -79,7 +79,7 @@ class AiSummaryService
 
         // Limit text length to avoid API limits
         if (strlen($text) > 4000) {
-            $text = substr($text, 0, 4000) . '...';
+            $text = substr($text, 0, 4000).'...';
         }
 
         return $text;
@@ -125,8 +125,8 @@ class AiSummaryService
     {
         return [
             'status' => 'completed',
-            'content' => "This is a mock summary for '{$book->title}' by {$book->author}. " .
-                        'The book explores various themes and provides an engaging narrative ' .
+            'content' => "This is a mock summary for '{$book->title}' by {$book->author}. ".
+                        'The book explores various themes and provides an engaging narrative '.
                         'that captivates readers from beginning to end.',
             'generated_at' => now()->toISOString(),
             'word_count' => 25,
