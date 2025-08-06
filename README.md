@@ -87,7 +87,7 @@ BookVerse is a full-stack e-commerce platform that leverages artificial intellig
 ### 1. Clone the Repository
 ```bash
 git clone <repository-url>
-cd cursor-project
+cd [project]
 ```
 
 ### 2. Environment Setup
@@ -197,7 +197,7 @@ The API is fully documented using Swagger/OpenAPI. Access the interactive docume
 
 ### Directory Structure
 ```
-cursor-project/
+project/
 ├── app/
 │   ├── Http/Controllers/Api/     # API controllers
 │   ├── Models/                   # Eloquent models

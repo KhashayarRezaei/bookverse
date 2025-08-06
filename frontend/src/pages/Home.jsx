@@ -193,7 +193,7 @@ const Home = () => {
                   disabled={currentPage === 1}
                   className={`px-6 py-3 text-sm font-medium rounded-xl transition-all duration-200 ${
                     currentPage === 1
-                      ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                      ? 'bg-gray-100 text-gray-400'
                       : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-200 hover:border-gray-300 hover:shadow-md'
                   }`}
                 >
@@ -236,7 +236,7 @@ const Home = () => {
                   disabled={currentPage === totalPages}
                   className={`px-6 py-3 text-sm font-medium rounded-xl transition-all duration-200 ${
                     currentPage === totalPages
-                      ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                      ? 'bg-gray-100 text-gray-400'
                       : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-200 hover:border-gray-300 hover:shadow-md'
                   }`}
                 >

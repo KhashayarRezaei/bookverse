@@ -105,7 +105,7 @@ BookVerse is a comprehensive e-commerce application for book sales, featuring a 
 ## 📁 **Project Structure**
 
 ```
-cursor-project/
+project/
 ├── app/
 │   ├── Contracts/
 │   │   └── PaymentGatewayInterface.php
